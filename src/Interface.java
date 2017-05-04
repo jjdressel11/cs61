@@ -44,7 +44,7 @@ public class Interface {
 
             int user_type = 0;
 
-            while (exit == false){
+            while (!exit){
 
                 while (user_type_set == false){
                     System.out.print("Are you an editor, author, or reviewer? ");
@@ -54,19 +54,19 @@ public class Interface {
                         user_type = EDITOR;
                         user_type_set = true;
 
-                        editor_interface(sc);
+                        exit = editor_interface(sc);
                     }
                     else if (type.equals("author")){
                         user_type = AUTHOR;
                         user_type_set = true;
 
-                        author_interface(sc);
+                        exit = author_interface(sc);
                     }
                     else if (type.equals("reviewer")){
                         user_type = REVIEWER;
                         user_type_set = true;
 
-                        reviewer_interface(sc);
+                        exit = reviewer_interface(sc);
                     }
                     else{
                         System.out.println("ERROR: Invalid user type.");
@@ -77,31 +77,58 @@ public class Interface {
         }
     }
 
-    public static void editor_interface(Scanner sc){
+    public static boolean editor_interface(Scanner sc){
         boolean logged_in = false;
+        boolean exit = false;
+        String cmd;
 
         while (logged_in == false){
 
             System.out.println("To login, type 'login <id>' with your user ID.");
             System.out.println("To register as a new editor, type 'register editor <fname> <lname>': ");
 
-
-            String cmd = sc.nextLine();
+            cmd = sc.nextLine();
 
             if (cmd.length() >= 8 && cmd.substring(0,8).equals("register")){
                 System.out.println("REGISTERING AUTHOR");
             }
             else if (cmd.length() >= 5 && cmd.substring(0,5).equals("login")){
-                System.out.println("LOGIN");
+               // System.out.println("LOGIN");
+
+                String [] log_id = cmd.split(" ");
+
+                if (log_id.length == 2) {
+
+                    int id = Integer.valueOf(log_id[1]);
+
+                    logged_in = login(EDITOR, id);
+
+                    if(!logged_in){
+                        System.out.println("ERROR TRY AGAIN");
+                    }
+                }
 
             }
-
-            // LOGIN TO SQL
         }
+
+        System.out.print("Login Successful. Enter command: ");
+
+        while (!exit){
+            cmd = sc.nextLine();
+
+            if (cmd.equals("exit")){
+                exit = true;
+            }
+        }
+
+        return true;
     }
 
-    public static void author_interface(Scanner sc){
+    public static boolean author_interface(Scanner sc){
         boolean logged_in = false;
+        boolean exit = false;
+
+        String cmd;
 
         while (logged_in == false){
 
@@ -109,76 +136,128 @@ public class Interface {
             System.out.println("To register as a new author, type 'register author <fname> <lname> <email> <address>': ");
 
 
-            String cmd = sc.nextLine();
+            cmd = sc.nextLine();
 
             if (cmd.length() >= 8 && cmd.substring(0,8).equals("register")){
                 System.out.println("REGISTERING AUTHOR");
             }
             else if (cmd.length() >= 5 && cmd.substring(0,5).equals("login")){
-                System.out.println("LOGIN");
+                //System.out.println("LOGIN");
 
+                String [] log_id = cmd.split(" ");
+
+                if (log_id.length == 2) {
+
+                    int id = Integer.valueOf(log_id[1]);
+
+                    logged_in = login(AUTHOR, id);
+
+                    if(!logged_in){
+                        System.out.println("ERROR TRY AGAIN");
+                    }
+                }
             }
+        }
 
-            // LOGIN TO SQL
+        System.out.print("Login Successful. Enter command: ");
+
+        while (!exit){
+            cmd = sc.nextLine();
+
+            if (cmd.equals("exit")){
+                exit = true;
+            }
         }
 
 
+        return true;
     }
 
-    public static void reviewer_interface(Scanner sc){
+    public static boolean reviewer_interface(Scanner sc){
         boolean logged_in = false;
+        boolean exit = false;
+        String cmd;
 
-        while (logged_in == false){
+        while (!logged_in){
 
             System.out.println("To login, type 'login <id>' with your user ID.");
             System.out.println("To register as a new reviewer, type 'register reviewer <fname> <lname> <email> <address>' : ");
 
 
-            String cmd = sc.nextLine();
+            cmd = sc.nextLine();
 
             if (cmd.length() >= 8 && cmd.substring(0,8).equals("register")){
                 System.out.println("REGISTERING AUTHOR");
             }
             else if (cmd.length() >= 5 && cmd.substring(0,5).equals("login")){
-                System.out.println("LOGIN");
+               // System.out.println("LOGIN");
 
-                logged_in = true;
+                String [] log_id = cmd.split(" ");
+
+                if (log_id.length == 2) {
+
+                    int id = Integer.valueOf(log_id[1]);
+
+                    logged_in = login(REVIEWER, id);
+
+                    if(!logged_in){
+                        System.out.println("ERROR TRY AGAIN");
+                    }
+                }
             }
 
-            // LOGIN TO SQL
         }
 
+        System.out.print("Login Successful. Enter command: ");
+
+        while (!exit){
+            cmd = sc.nextLine();
+
+            if (cmd.equals("exit")){
+                exit = true;
+            }
+        }
+
+        return true;
     }
 
     public static boolean login(int user_type, int user_ID){
 
         String query = "";
+        Statement stmt = null;
+        ResultSet rs = null;
 
         if (user_type == EDITOR){
-            
+            query = "SELECT * FROM editor";
+        } else if (user_type == AUTHOR){
+            query = "SELECT * FROM author";
+        } else {
+            query = "SELECT * FROM reviewer";
         }
-
 
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT * FROM author");
+            rs = stmt.executeQuery(query);
 
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int columnsNumber = rsmd.getColumnCount();
-            while (rs.next()) {
-                for (int i = 1; i <= columnsNumber; i++) {
-                    if (i > 1) System.out.print(",  ");
-                    String columnValue = rs.getString(i);
-                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
+            while(rs.next()) {
+
+           //     System.out.println("ID: " + rs.getInt(1));
+
+                // user found in system
+                if (user_ID == rs.getInt(1)){
+                    return true;
                 }
-                System.out.println("");
+
             }
+
         }
         catch (SQLException ex){
             // handle any errors
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
             System.out.println("VendorError: " + ex.getErrorCode());
+
+            return false;
         }
         finally {
             // it is a good idea to release
@@ -203,9 +282,7 @@ public class Interface {
             }
         }
 
-
-
-        return true;
+        return false;
     }
 
   //  public static boolean register()
