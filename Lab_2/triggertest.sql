@@ -20,10 +20,16 @@ SELECT status FROM manuscript WHERE manuscript_ID = 2;
 
 DELETE FROM reviewer WHERE reviewer_ID = 8;
 
+-- show messages
+SELECT * FROM message;
+
 -- manuscript no longer in manuscript_review
 SELECT * FROM manuscript_review WHERE manuscript_ID = 2;
 -- status changed to submitted
-SELECT status, manuscript_ID FROM manuscript WHERE manuscript_ID = 2;
+SELECT manuscript_ID, status FROM manuscript WHERE manuscript_ID = 2;
+
+-- clear messages
+TRUNCATE message;
 
 
 -- Deletes 1 of 2 reviewers for manuscript #1, status stays the same
@@ -34,6 +40,12 @@ DELETE FROM reviewer WHERE reviewer_ID = 4;
 SELECT * from manuscript_review WHERE manuscript_ID = 1;
 
 SELECT status FROM manuscript WHERE manuscript_ID = 1;
+
+-- show message, should not be a message present about manuscript_ID = 1;
+SELECT * FROM message;
+
+-- clear messages
+TRUNCATE message;
 
 
 

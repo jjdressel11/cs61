@@ -202,6 +202,11 @@ CREATE TABLE reviewer_interest (
     ON UPDATE NO ACTION);
     
     
+CREATE TABLE message (
+	message_ID INT NOT NULL AUTO_INCREMENT,
+    message_text VARCHAR(1000),
+    PRIMARY KEY (message_ID));
+
     -- -----------------------------------------------------
 -- INSERT VALUES INTO DB
 -- -----------------------------------------------------

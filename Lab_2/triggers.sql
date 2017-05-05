@@ -1,5 +1,13 @@
 USE jdressel_db;
 
+-- DECLARE CONTINUE HANDLER FOR SQLWARNING
+-- BEGIN
+-- 	 GET DIAGNOSTICS CONDITION 1 @sqlstate = RETURNED_SQLSTATE,
+-- 	 @errno = MYSQL_ERRNO, @text = MESSAGE_TEXT;
+-- 	 SET @full_error = CONCAT("ERROR ", @errno, " (", @sqlstate, "): ", @text);
+-- 	 SELECT @full_error; 
+--  END;
+
 DROP TRIGGER IF EXISTS ManReview_trigger;
 
 DELIMITER /
@@ -19,7 +27,8 @@ BEGIN
         
         -- THIS IS NOT WORKING - not showing the proper warning
         SET signal_message = CONCAT('Manuscript has no more reviewers: ', CAST(OLD.manuscript_ID AS CHAR));
-        SIGNAL SQLSTATE '01000' SET message_text = signal_message;
+        INSERT INTO message (message_text) VALUES (signal_message);
+        -- SIGNAL SQLSTATE '01000' SET message_text = signal_message;
     END IF;
 		
 END
