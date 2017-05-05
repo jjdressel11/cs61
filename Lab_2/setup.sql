@@ -23,6 +23,7 @@ DROP TABLE IF EXISTS RICodes;
 DROP TABLE IF EXISTS editor;
 DROP TABLE IF EXISTS author;
 DROP TABLE IF EXISTS affiliation;
+DROP TABLE IF EXISTS message;
 
 -- -----------------------------------------------------
 -- Table affiliation

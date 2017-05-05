@@ -2,15 +2,6 @@ USE jdressel_db;
 
 -- RUN LINE BY LINE
 
--- Testing check_ricode trigger
-
--- Should return an Error
-INSERT INTO manuscript  (editor_ID,author_ID,title,status,status_time_stamp,RI_Code) VALUES (9,1,"tortor. Nunc commodo","submitted",NOW(),2);
-
--- Insert will be successful
-INSERT INTO manuscript  (editor_ID,author_ID,title,status,status_time_stamp,RI_Code) VALUES (9,1,"tortor. Nunc commodo","submitted",NOW(),11);
-
-
 -- Testing UnderReview_trigger
 
 
@@ -46,6 +37,16 @@ SELECT * FROM message;
 
 -- clear messages
 TRUNCATE message;
+
+
+
+-- Testing check_ricode trigger
+
+-- Should return an Error
+INSERT INTO manuscript  (editor_ID,author_ID,title,status,status_time_stamp,RI_Code) VALUES (9,1,"tortor. Nunc commodo","submitted",NOW(),2);
+
+-- Insert will be successful
+INSERT INTO manuscript  (editor_ID,author_ID,title,status,status_time_stamp,RI_Code) VALUES (9,1,"tortor. Nunc commodo","submitted",NOW(),11);
 
 
 
