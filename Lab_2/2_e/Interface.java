@@ -101,6 +101,11 @@ public class Interface {
 
                 System.out.print("Enter your ID: ");
                 String edidS = sc.nextLine();
+
+                if (edidS.equals("exit")){
+                    return true;
+                }
+
                 int editor_id = Integer.parseInt(edidS);
 
                 logged_in = login(EDITOR, editor_id);
@@ -108,6 +113,11 @@ public class Interface {
                 while (!logged_in) {
                     System.out.print("Sorry, re-enter your ID: ");
                     edidS = sc.nextLine();
+
+                    if (edidS.equals("exit")){
+                        return true;
+                    }
+
                     editor_id = Integer.parseInt(edidS);
 
                     logged_in = login(EDITOR, editor_id);
@@ -799,6 +809,7 @@ public class Interface {
 
                     else if (cmd.equals("exit")){
                         exit = true;
+                        return true;
                     }
                 }
 
@@ -845,6 +856,11 @@ public class Interface {
 
                 System.out.print("Enter your ID: ");
                 String authIdS = sc.nextLine();
+
+                if (authIdS.equals("exit")){
+                    return true;
+                }
+
                 int author_id = Integer.parseInt(authIdS);
 
                     logged_in = login(AUTHOR, author_id);
@@ -852,6 +868,12 @@ public class Interface {
                     while (!logged_in) {
                         System.out.print("Sorry, re-enter your ID: ");
                         authIdS = sc.nextLine();
+
+                        if (authIdS.equals("exit")){
+                            return true;
+                        }
+
+
                         author_id = Integer.parseInt(authIdS);
 
                         logged_in = login(AUTHOR, author_id);
@@ -1504,6 +1526,12 @@ public class Interface {
 
                 System.out.print("Enter your ID: ");
                 String revIdS = sc.nextLine();
+
+                if (revIdS.equals("exit")){
+                    return true;
+                }
+
+
                 int rev_id = Integer.parseInt(revIdS);
 
                     logged_in = login(REVIEWER, rev_id);
@@ -1511,6 +1539,11 @@ public class Interface {
                     while (!logged_in) {
                         System.out.print("Sorry, re-enter your ID: ");
                         revIdS = sc.nextLine();
+
+                        if (revIdS.equals("exit")){
+                            return true;
+                        }
+                        
                         rev_id = Integer.parseInt(revIdS);
 
                         logged_in = login(REVIEWER, rev_id);
