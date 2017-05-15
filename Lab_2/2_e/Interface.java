@@ -27,13 +27,13 @@ public class Interface {
 
     public static void main (String args[]) throws IOException {
 
+        System.out.println("Welcome to the Journal of E-commerce Research Knowledge");
+
         // start by connecting to the database
         if (!connect_to_DB()){
             System.out.println("Error connecting to the database.");
         } else {
             Scanner sc = new Scanner(System.in);
-
-            System.out.println("Welcome to the Journal of E-commerce Research Knowledge");
 
             boolean exit = false;
             boolean user_type_set = false;
@@ -2167,6 +2167,8 @@ public class Interface {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
         } catch (Exception ex) {
             // handle the error
+            System.out.println(ex);
+
             return false;
         }
 
@@ -2183,8 +2185,13 @@ public class Interface {
             stmt = conn.createStatement();
             rs = stmt.executeQuery("USE jdressel_db");
 
-        } catch (SQLException e){
+        } catch (SQLException ex){
             // handle exception
+
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+
             return false;
         }
 
