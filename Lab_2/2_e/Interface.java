@@ -1,7 +1,8 @@
-/**
+/*
  * Lab 2, Part E
  * Created by Max Parker and Julia Dressel
  * 5/13/17
+ *
  */
 
 import java.io.Console;
@@ -27,13 +28,13 @@ public class Interface {
 
     public static void main (String args[]) throws IOException {
 
-        System.out.println("Welcome to the Journal of E-commerce Research Knowledge");
-
         // start by connecting to the database
         if (!connect_to_DB()){
             System.out.println("Error connecting to the database.");
         } else {
             Scanner sc = new Scanner(System.in);
+
+            System.out.println("Welcome to the Journal of E-commerce Research Knowledge");
 
             boolean exit = false;
             boolean user_type_set = false;
@@ -130,9 +131,9 @@ public class Interface {
 
                 } catch (SQLException ex) {
                     // handle any errors
-                    System.out.println("SQLException: " + ex.getMessage());
-                    System.out.println("SQLState: " + ex.getSQLState());
-                    System.out.println("VendorError: " + ex.getErrorCode());
+//                    System.out.println("SQLException: " + ex.getMessage());
+//                    System.out.println("SQLState: " + ex.getSQLState());
+//                    System.out.println("VendorError: " + ex.getErrorCode());
                 } finally {
                     if (rs != null) {
                         try {
@@ -154,7 +155,7 @@ public class Interface {
 
                 stmt = null;
                 rs = null;
-                String query = "SELECT * FROM manuscript ORDER BY status, manuscript_ID";
+                String query = "SELECT * FROM manuscript WHERE editor_ID = "+editor_id+" ORDER BY status, manuscript_ID ";
 
                 int sub = 0;
                 int ur = 0;
@@ -188,9 +189,9 @@ public class Interface {
                     }
                 } catch (SQLException ex) {
                     // handle any errors
-                    System.out.println("SQLException: " + ex.getMessage());
-                    System.out.println("SQLState: " + ex.getSQLState());
-                    System.out.println("VendorError: " + ex.getErrorCode());
+//                    System.out.println("SQLException: " + ex.getMessage());
+//                    System.out.println("SQLState: " + ex.getSQLState());
+//                    System.out.println("VendorError: " + ex.getErrorCode());
                 } finally {
                     if (rs != null) {
                         try {
@@ -228,36 +229,22 @@ public class Interface {
 
                         stmt = null;
                         rs = null;
-                        query="SELECT * FROM manuscript ORDER BY status, manuscript_ID";
-
-                        sub = 0;
-                        ur = 0;
-                        rej = 0;
-                        acc = 0;
-                        type = 0;
-                        sched = 0;
-                        pub = 0;
+                        query="SELECT * FROM manuscript WHERE editor_ID = "+editor_id+" ORDER BY status, manuscript_ID";
 
                         try {
                             stmt = conn.createStatement();
                             rs = stmt.executeQuery(query);
 
                             while (rs.next()) {
-                                String status = rs.getString(5);
-                                if (status.equals("submitted")) { sub++; }
-                                else if (status.equals("under review")) { ur++; }
-                                else if (status.equals("rejected")) { rej++; }
-                                else if (status.equals("accepted")) { acc++; }
-                                else if (status.equals("in typesetting")) { type++; }
-                                else if (status.equals("scheduled for publication")) { sched++; }
-                                else if (status.equals("published")) { pub++; }
+                                String status = "ID: "+rs.getString(1)+", Status: "+rs.getString(5);
+                                System.out.println(status);
                             }
                         }
                         catch (SQLException ex){
                             // handle any errors
-                            System.out.println("SQLException: " + ex.getMessage());
-                            System.out.println("SQLState: " + ex.getSQLState());
-                            System.out.println("VendorError: " + ex.getErrorCode());
+//                            System.out.println("SQLException: " + ex.getMessage());
+//                            System.out.println("SQLState: " + ex.getSQLState());
+//                            System.out.println("VendorError: " + ex.getErrorCode());
                         }
                         finally {
                             if (stmt != null) {
@@ -268,14 +255,6 @@ public class Interface {
                                 stmt = null;
                             }
                         }
-
-                        System.out.println(sub + " submitted");
-                        System.out.println(ur + " under review");
-                        System.out.println(rej + " rejected");
-                        System.out.println(acc + " accepted");
-                        System.out.println(type + " in typesetting");
-                        System.out.println(sched + " scheduled for publication");
-                        System.out.println(pub + " published");
 
                         System.out.print("Enter another command, or type 'exit': ");
                     }
@@ -293,19 +272,19 @@ public class Interface {
 
                         String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
-                        System.out.println("Assigned on: " + timestamp);
-
                         manuAssign = "INSERT INTO manuscript_review (manuscript_ID,reviewer_ID,date_assigned) VALUES ("+manuID+","+revID+",'"+timestamp+"')";
 
                         try {
                             stmt = conn.createStatement();
                             stmt.executeUpdate(manuAssign);
+                            System.out.println("Assigned on: " + timestamp);
                         }
                         catch (SQLException ex){
                             // handle any errors
-                            System.out.println("SQLException: " + ex.getMessage());
-                            System.out.println("SQLState: " + ex.getSQLState());
-                            System.out.println("VendorError: " + ex.getErrorCode());
+                            System.out.println("Sorry, either the manuscript ID or the reviewer ID is not valid.");
+//                            System.out.println("SQLException: " + ex.getMessage());
+//                            System.out.println("SQLState: " + ex.getSQLState());
+//                            System.out.println("VendorError: " + ex.getErrorCode());
                         }
                         finally {
                             if (stmt != null) {
@@ -328,9 +307,10 @@ public class Interface {
                         }
                         catch (SQLException ex){
                             // handle any errors
-                            System.out.println("SQLException: " + ex.getMessage());
-                            System.out.println("SQLState: " + ex.getSQLState());
-                            System.out.println("VendorError: " + ex.getErrorCode());
+//                            System.out.println("Sorry, the manuscript ID entered is not valid.");
+//                            System.out.println("SQLException: " + ex.getMessage());
+//                            System.out.println("SQLState: " + ex.getSQLState());
+//                            System.out.println("VendorError: " + ex.getErrorCode());
                         }
                         finally {
                             if (stmt != null) {
@@ -355,19 +335,20 @@ public class Interface {
 
                         String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
-                        System.out.println("Rejected on: " + timestamp);
 
                         manuReview = "UPDATE manuscript SET status = 'rejected', status_time_stamp = '"+timestamp+"' WHERE manuscript_ID = "+manuID+"";
 
                         try {
                             stmt = conn.createStatement();
                             stmt.executeUpdate(manuReview);
+                            System.out.println("Rejected on: " + timestamp);
                         }
                         catch (SQLException ex){
                             // handle any errors
-                            System.out.println("SQLException: " + ex.getMessage());
-                            System.out.println("SQLState: " + ex.getSQLState());
-                            System.out.println("VendorError: " + ex.getErrorCode());
+//                            System.out.println("Sorry, the manuscript ID entered is not valid.");
+//                            System.out.println("SQLException: " + ex.getMessage());
+//                            System.out.println("SQLState: " + ex.getSQLState());
+//                            System.out.println("VendorError: " + ex.getErrorCode());
                         }
                         finally {
                             if (stmt != null) {
@@ -392,19 +373,20 @@ public class Interface {
 
                         String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
-                        System.out.println("Accepted on: " + timestamp);
-
                         manuReview = "UPDATE manuscript SET status = 'accepted', status_time_stamp = '"+timestamp+"' WHERE manuscript_ID = "+manuID+"";
 
                         try {
                             stmt = conn.createStatement();
                             stmt.executeUpdate(manuReview);
+                            System.out.println("Accepted on: " + timestamp);
+
                         }
                         catch (SQLException ex){
                             // handle any errors
-                            System.out.println("SQLException: " + ex.getMessage());
-                            System.out.println("SQLState: " + ex.getSQLState());
-                            System.out.println("VendorError: " + ex.getErrorCode());
+//                            System.out.println("Sorry, the manuscript ID entered is not valid.");
+//                            System.out.println("SQLException: " + ex.getMessage());
+//                            System.out.println("SQLState: " + ex.getSQLState());
+//                            System.out.println("VendorError: " + ex.getErrorCode());
                         }
                         finally {
                             if (stmt != null) {
@@ -432,19 +414,20 @@ public class Interface {
 
                         String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
-                        System.out.println("Typeset on: " + timestamp);
-
                         manuReview = "UPDATE manuscript SET status = 'in typsetting', status_time_stamp = '"+timestamp+"' WHERE manuscript_ID = "+manuID+"";
 
                         try {
                             stmt = conn.createStatement();
                             stmt.executeUpdate(manuReview);
+                            System.out.println("Typeset on: " + timestamp);
+
                         }
                         catch (SQLException ex){
                             // handle any errors
-                            System.out.println("SQLException: " + ex.getMessage());
-                            System.out.println("SQLState: " + ex.getSQLState());
-                            System.out.println("VendorError: " + ex.getErrorCode());
+//                            System.out.println("Sorry, the manuscript ID entered is not valid.");
+//                            System.out.println("SQLException: " + ex.getMessage());
+//                            System.out.println("SQLState: " + ex.getSQLState());
+//                            System.out.println("VendorError: " + ex.getErrorCode());
                         }
                         finally {
                             if (stmt != null) {
@@ -467,9 +450,10 @@ public class Interface {
                         }
                         catch (SQLException ex){
                             // handle any errors
-                            System.out.println("SQLException: " + ex.getMessage());
-                            System.out.println("SQLState: " + ex.getSQLState());
-                            System.out.println("VendorError: " + ex.getErrorCode());
+                            System.out.println("Sorry, the manuscript ID entered is not valid.");
+//                            System.out.println("SQLException: " + ex.getMessage());
+//                            System.out.println("SQLState: " + ex.getSQLState());
+//                            System.out.println("VendorError: " + ex.getErrorCode());
                         }
                         finally {
                             if (stmt != null) {
@@ -514,9 +498,10 @@ public class Interface {
                         }
                         catch (SQLException ex){
                             // handle any errors
-                            System.out.println("SQLException: " + ex.getMessage());
-                            System.out.println("SQLState: " + ex.getSQLState());
-                            System.out.println("VendorError: " + ex.getErrorCode());
+                            System.out.println("Sorry, the manuscript ID entered is not valid.");
+//                            System.out.println("SQLException: " + ex.getMessage());
+//                            System.out.println("SQLState: " + ex.getSQLState());
+//                            System.out.println("VendorError: " + ex.getErrorCode());
                         }
                         finally {
                             if (rs != null) {
@@ -553,9 +538,11 @@ public class Interface {
                         }
                         catch (SQLException ex){
                             // handle any errors
-                            System.out.println("SQLException: " + ex.getMessage());
-                            System.out.println("SQLState: " + ex.getSQLState());
-                            System.out.println("VendorError: " + ex.getErrorCode());
+                            System.out.println("Sorry, the issue entered is not valid.");
+
+//                            System.out.println("SQLException: " + ex.getMessage());
+//                            System.out.println("SQLState: " + ex.getSQLState());
+//                            System.out.println("VendorError: " + ex.getErrorCode());
                         }
                         finally {
                             if (rs != null) {
@@ -576,6 +563,30 @@ public class Interface {
 
                         if (issuePages + manPages < 100) {
 
+                            int start = issuePages+1;
+
+                            String startPage = "UPDATE manuscript_final SET start_page = "+issuePages+" WHERE manuscript_ID = "+manuID+"";
+
+                            try {
+                                stmt = conn.createStatement();
+                                stmt.executeUpdate(startPage);
+                            }
+                            catch (SQLException ex){
+                                // handle any errors
+                                System.out.println("SQLException: " + ex.getMessage());
+                                System.out.println("SQLState: " + ex.getSQLState());
+                                System.out.println("VendorError: " + ex.getErrorCode());
+                            }
+                            finally {
+                                if (stmt != null) {
+                                    try {
+                                        stmt.close();
+                                    } catch (SQLException sqlEx) { } // ignore
+
+                                    stmt = null;
+                                }
+                            }
+
                             issuePages += manPages;
 
                             String manuReview = "";
@@ -583,19 +594,19 @@ public class Interface {
 
                             String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
-                            System.out.println("Scheduled on: " + timestamp);
-
                             manuReview = "UPDATE manuscript SET status = 'scheduled for publication', status_time_stamp = '"+timestamp+"' WHERE manuscript_ID = "+manuID+"";
 
                             try {
                                 stmt = conn.createStatement();
                                 stmt.executeUpdate(manuReview);
+                                System.out.println("Scheduled on: " + timestamp);
                             }
                             catch (SQLException ex){
                                 // handle any errors
-                                System.out.println("SQLException: " + ex.getMessage());
-                                System.out.println("SQLState: " + ex.getSQLState());
-                                System.out.println("VendorError: " + ex.getErrorCode());
+//                                System.out.println("Sorry, the manuscript ID entered is not valid.");
+//                                System.out.println("SQLException: " + ex.getMessage());
+//                                System.out.println("SQLState: " + ex.getSQLState());
+//                                System.out.println("VendorError: " + ex.getErrorCode());
                             }
                             finally {
                                 if (stmt != null) {
@@ -618,9 +629,10 @@ public class Interface {
                             }
                             catch (SQLException ex){
                                 // handle any errors
-                                System.out.println("SQLException: " + ex.getMessage());
-                                System.out.println("SQLState: " + ex.getSQLState());
-                                System.out.println("VendorError: " + ex.getErrorCode());
+//                                System.out.println("Sorry, the manuscript ID entered is not valid.");
+//                                System.out.println("SQLException: " + ex.getMessage());
+//                                System.out.println("SQLState: " + ex.getSQLState());
+//                                System.out.println("VendorError: " + ex.getErrorCode());
                             }
                             finally {
                                 if (stmt != null) {
@@ -643,9 +655,9 @@ public class Interface {
                             }
                             catch (SQLException ex){
                                 // handle any errors
-                                System.out.println("SQLException: " + ex.getMessage());
-                                System.out.println("SQLState: " + ex.getSQLState());
-                                System.out.println("VendorError: " + ex.getErrorCode());
+//                                System.out.println("SQLException: " + ex.getMessage());
+//                                System.out.println("SQLState: " + ex.getSQLState());
+//                                System.out.println("VendorError: " + ex.getErrorCode());
                             }
                             finally {
                                 if (stmt != null) {
@@ -691,9 +703,9 @@ public class Interface {
                         }
                         catch (SQLException ex){
                             // handle any errors
-                            System.out.println("SQLException: " + ex.getMessage());
-                            System.out.println("SQLState: " + ex.getSQLState());
-                            System.out.println("VendorError: " + ex.getErrorCode());
+//                            System.out.println("SQLException: " + ex.getMessage());
+//                            System.out.println("SQLState: " + ex.getSQLState());
+//                            System.out.println("VendorError: " + ex.getErrorCode());
                         }
                         finally {
                             if (rs != null) {
@@ -722,13 +734,12 @@ public class Interface {
 
                             String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
-                            System.out.println("Published on: " + timestamp);
-
                             query = "SELECT * FROM manuscript_final WHERE pub_year = "+issueYear+" AND period_num = "+issuePer+"";
 
                             try {
                                 stmt = conn.createStatement();
                                 rs = stmt.executeQuery(query);
+                                System.out.println("Published on: " + timestamp);
 
                                 while (rs.next()) {
                                     String man_ID_string = rs.getString(1);
@@ -744,9 +755,9 @@ public class Interface {
                                     }
                                     catch (SQLException ex){
                                         // handle any errors
-                                        System.out.println("SQLException: " + ex.getMessage());
-                                        System.out.println("SQLState: " + ex.getSQLState());
-                                        System.out.println("VendorError: " + ex.getErrorCode());
+//                                        System.out.println("SQLException: " + ex.getMessage());
+//                                        System.out.println("SQLState: " + ex.getSQLState());
+//                                        System.out.println("VendorError: " + ex.getErrorCode());
                                     }
                                     finally {
                                         if (stmt2 != null) {
@@ -762,9 +773,9 @@ public class Interface {
                             }
                             catch (SQLException ex){
                                 // handle any errors
-                                System.out.println("SQLException: " + ex.getMessage());
-                                System.out.println("SQLState: " + ex.getSQLState());
-                                System.out.println("VendorError: " + ex.getErrorCode());
+//                                System.out.println("SQLException: " + ex.getMessage());
+//                                System.out.println("SQLState: " + ex.getSQLState());
+//                                System.out.println("VendorError: " + ex.getErrorCode());
                             }
                             finally {
                                 if (stmt != null) {
@@ -867,9 +878,9 @@ public class Interface {
                     }
                     catch (SQLException ex){
                         // handle any errors
-                        System.out.println("SQLException: " + ex.getMessage());
-                        System.out.println("SQLState: " + ex.getSQLState());
-                        System.out.println("VendorError: " + ex.getErrorCode());
+//                        System.out.println("SQLException: " + ex.getMessage());
+//                        System.out.println("SQLState: " + ex.getSQLState());
+//                        System.out.println("VendorError: " + ex.getErrorCode());
                     }
                     finally {
                         if (rs != null) {
@@ -890,7 +901,7 @@ public class Interface {
 
                     stmt = null;
                     rs = null;
-                    String query="SELECT * FROM manuscript ORDER BY status, manuscript_ID";
+                    String query="SELECT * FROM manuscript WHERE author_ID = "+author_id+" ORDER BY status, manuscript_ID";
 
                     int sub = 0;
                     int ur = 0;
@@ -917,9 +928,9 @@ public class Interface {
                     }
                     catch (SQLException ex){
                         // handle any errors
-                        System.out.println("SQLException: " + ex.getMessage());
-                        System.out.println("SQLState: " + ex.getSQLState());
-                        System.out.println("VendorError: " + ex.getErrorCode());
+//                        System.out.println("SQLException: " + ex.getMessage());
+//                        System.out.println("SQLState: " + ex.getSQLState());
+//                        System.out.println("VendorError: " + ex.getErrorCode());
                     }
                     finally {
                         if (rs != null) {
@@ -994,9 +1005,9 @@ public class Interface {
                             }
                             catch (SQLException ex){
                                 // handle any errors
-                                System.out.println("SQLException: " + ex.getMessage());
-                                System.out.println("SQLState: " + ex.getSQLState());
-                                System.out.println("VendorError: " + ex.getErrorCode());
+//                                System.out.println("SQLException: " + ex.getMessage());
+//                                System.out.println("SQLState: " + ex.getSQLState());
+//                                System.out.println("VendorError: " + ex.getErrorCode());
                             }
                             finally {
                                 if (stmt != null) {
@@ -1018,9 +1029,9 @@ public class Interface {
                             }
                             catch (SQLException ex){
                                 // handle any errors
-                                System.out.println("SQLException: " + ex.getMessage());
-                                System.out.println("SQLState: " + ex.getSQLState());
-                                System.out.println("VendorError: " + ex.getErrorCode());
+//                                System.out.println("SQLException: " + ex.getMessage());
+//                                System.out.println("SQLState: " + ex.getSQLState());
+//                                System.out.println("VendorError: " + ex.getErrorCode());
                             }
                             finally {
                                 if (stmt != null) {
@@ -1049,9 +1060,9 @@ public class Interface {
                             }
                             catch (SQLException ex){
                                 // handle any errors
-                                System.out.println("SQLException: " + ex.getMessage());
-                                System.out.println("SQLState: " + ex.getSQLState());
-                                System.out.println("VendorError: " + ex.getErrorCode());
+//                                System.out.println("SQLException: " + ex.getMessage());
+//                                System.out.println("SQLState: " + ex.getSQLState());
+//                                System.out.println("VendorError: " + ex.getErrorCode());
                             }
                             finally {
                                 if (stmt != null) {
@@ -1073,9 +1084,9 @@ public class Interface {
                             }
                             catch (SQLException ex){
                                 // handle any errors
-                                System.out.println("SQLException: " + ex.getMessage());
-                                System.out.println("SQLState: " + ex.getSQLState());
-                                System.out.println("VendorError: " + ex.getErrorCode());
+//                                System.out.println("SQLException: " + ex.getMessage());
+//                                System.out.println("SQLState: " + ex.getSQLState());
+//                                System.out.println("VendorError: " + ex.getErrorCode());
                             }
                             finally {
                                 if (stmt != null) {
@@ -1107,9 +1118,9 @@ public class Interface {
                             }
                             catch (SQLException ex){
                                 // handle any errors
-                                System.out.println("SQLException: " + ex.getMessage());
-                                System.out.println("SQLState: " + ex.getSQLState());
-                                System.out.println("VendorError: " + ex.getErrorCode());
+//                                System.out.println("SQLException: " + ex.getMessage());
+//                                System.out.println("SQLState: " + ex.getSQLState());
+//                                System.out.println("VendorError: " + ex.getErrorCode());
                             }
                             finally {
                                 if (stmt != null) {
@@ -1139,9 +1150,9 @@ public class Interface {
                                     }
                                     catch (SQLException ex){
                                         // handle any errors
-                                        System.out.println("SQLException: " + ex.getMessage());
-                                        System.out.println("SQLState: " + ex.getSQLState());
-                                        System.out.println("VendorError: " + ex.getErrorCode());
+//                                        System.out.println("SQLException: " + ex.getMessage());
+//                                        System.out.println("SQLState: " + ex.getSQLState());
+//                                        System.out.println("VendorError: " + ex.getErrorCode());
                                     }
                                     finally {
                                         if (stmt != null) {
@@ -1191,9 +1202,9 @@ public class Interface {
                             }
                             catch (SQLException ex){
                                 // handle any errors
-                                System.out.println("SQLException: " + ex.getMessage());
-                                System.out.println("SQLState: " + ex.getSQLState());
-                                System.out.println("VendorError: " + ex.getErrorCode());
+//                                System.out.println("SQLException: " + ex.getMessage());
+//                                System.out.println("SQLState: " + ex.getSQLState());
+//                                System.out.println("VendorError: " + ex.getErrorCode());
                             }
                             finally {
                                 if (stmt != null) {
@@ -1237,9 +1248,9 @@ public class Interface {
                                 }
                                 catch (SQLException ex){
                                     // handle any errors
-                                    System.out.println("SQLException: " + ex.getMessage());
-                                    System.out.println("SQLState: " + ex.getSQLState());
-                                    System.out.println("VendorError: " + ex.getErrorCode());
+//                                    System.out.println("SQLException: " + ex.getMessage());
+//                                    System.out.println("SQLState: " + ex.getSQLState());
+//                                    System.out.println("VendorError: " + ex.getErrorCode());
 
                                 }
                                 finally {
@@ -1264,9 +1275,9 @@ public class Interface {
                                 }
                                 catch (SQLException ex){
                                     // handle any errors
-                                    System.out.println("SQLException: " + ex.getMessage());
-                                    System.out.println("SQLState: " + ex.getSQLState());
-                                    System.out.println("VendorError: " + ex.getErrorCode());
+//                                    System.out.println("SQLException: " + ex.getMessage());
+//                                    System.out.println("SQLState: " + ex.getSQLState());
+//                                    System.out.println("VendorError: " + ex.getErrorCode());
 
                                 }
                                 finally {
@@ -1291,9 +1302,9 @@ public class Interface {
                                 }
                                 catch (SQLException ex){
                                     // handle any errors
-                                    System.out.println("SQLException: " + ex.getMessage());
-                                    System.out.println("SQLState: " + ex.getSQLState());
-                                    System.out.println("VendorError: " + ex.getErrorCode());
+//                                    System.out.println("SQLException: " + ex.getMessage());
+//                                    System.out.println("SQLState: " + ex.getSQLState());
+//                                    System.out.println("VendorError: " + ex.getErrorCode());
 
                                 }
                                 finally {
@@ -1318,9 +1329,9 @@ public class Interface {
                                 }
                                 catch (SQLException ex){
                                     // handle any errors
-                                    System.out.println("SQLException: " + ex.getMessage());
-                                    System.out.println("SQLState: " + ex.getSQLState());
-                                    System.out.println("VendorError: " + ex.getErrorCode());
+//                                    System.out.println("SQLException: " + ex.getMessage());
+//                                    System.out.println("SQLState: " + ex.getSQLState());
+//                                    System.out.println("VendorError: " + ex.getErrorCode());
 
                                 }
                                 finally {
@@ -1415,9 +1426,9 @@ public class Interface {
                 }
                 catch (SQLException ex){
                     // handle any errors
-                    System.out.println("SQLException: " + ex.getMessage());
-                    System.out.println("SQLState: " + ex.getSQLState());
-                    System.out.println("VendorError: " + ex.getErrorCode());
+//                    System.out.println("SQLException: " + ex.getMessage());
+//                    System.out.println("SQLState: " + ex.getSQLState());
+//                    System.out.println("VendorError: " + ex.getErrorCode());
 
                 }
                 finally {
@@ -1442,9 +1453,9 @@ public class Interface {
                 }
                 catch (SQLException ex){
                     // handle any errors
-                    System.out.println("SQLException: " + ex.getMessage());
-                    System.out.println("SQLState: " + ex.getSQLState());
-                    System.out.println("VendorError: " + ex.getErrorCode());
+//                    System.out.println("SQLException: " + ex.getMessage());
+//                    System.out.println("SQLState: " + ex.getSQLState());
+//                    System.out.println("VendorError: " + ex.getErrorCode());
 
                 }
                 finally {
@@ -1469,9 +1480,9 @@ public class Interface {
                 }
                 catch (SQLException ex){
                     // handle any errors
-                    System.out.println("SQLException: " + ex.getMessage());
-                    System.out.println("SQLState: " + ex.getSQLState());
-                    System.out.println("VendorError: " + ex.getErrorCode());
+//                    System.out.println("SQLException: " + ex.getMessage());
+//                    System.out.println("SQLState: " + ex.getSQLState());
+//                    System.out.println("VendorError: " + ex.getErrorCode());
 
                 }
                 finally {
@@ -1524,9 +1535,9 @@ public class Interface {
                     }
                     catch (SQLException ex){
                         // handle any errors
-                        System.out.println("SQLException: " + ex.getMessage());
-                        System.out.println("SQLState: " + ex.getSQLState());
-                        System.out.println("VendorError: " + ex.getErrorCode());
+//                        System.out.println("SQLException: " + ex.getMessage());
+//                        System.out.println("SQLState: " + ex.getSQLState());
+//                        System.out.println("VendorError: " + ex.getErrorCode());
                     }
                     finally {
                         if (rs != null) {
@@ -1593,9 +1604,9 @@ public class Interface {
                         }
                         catch (SQLException ex){
                             // handle any errors
-                            System.out.println("SQLException: " + ex.getMessage());
-                            System.out.println("SQLState: " + ex.getSQLState());
-                            System.out.println("VendorError: " + ex.getErrorCode());
+//                            System.out.println("SQLException: " + ex.getMessage());
+//                            System.out.println("SQLState: " + ex.getSQLState());
+//                            System.out.println("VendorError: " + ex.getErrorCode());
                         }
                         finally {
                             if (stmt2 != null) {
@@ -1611,9 +1622,9 @@ public class Interface {
                 }
                 catch (SQLException ex){
                     // handle any errors
-                    System.out.println("SQLException: " + ex.getMessage());
-                    System.out.println("SQLState: " + ex.getSQLState());
-                    System.out.println("VendorError: " + ex.getErrorCode());
+//                    System.out.println("SQLException: " + ex.getMessage());
+//                    System.out.println("SQLState: " + ex.getSQLState());
+//                    System.out.println("VendorError: " + ex.getErrorCode());
                 }
                 finally {
                     if (stmt != null) {
@@ -1691,9 +1702,9 @@ public class Interface {
                                     }
                                     catch (SQLException ex){
                                         // handle any errors
-                                        System.out.println("SQLException: " + ex.getMessage());
-                                        System.out.println("SQLState: " + ex.getSQLState());
-                                        System.out.println("VendorError: " + ex.getErrorCode());
+//                                        System.out.println("SQLException: " + ex.getMessage());
+//                                        System.out.println("SQLState: " + ex.getSQLState());
+//                                        System.out.println("VendorError: " + ex.getErrorCode());
                                     }
                                     finally {
                                         if (stmt2 != null) {
@@ -1709,9 +1720,9 @@ public class Interface {
                             }
                             catch (SQLException ex){
                                 // handle any errors
-                                System.out.println("SQLException: " + ex.getMessage());
-                                System.out.println("SQLState: " + ex.getSQLState());
-                                System.out.println("VendorError: " + ex.getErrorCode());
+//                                System.out.println("SQLException: " + ex.getMessage());
+//                                System.out.println("SQLState: " + ex.getSQLState());
+//                                System.out.println("VendorError: " + ex.getErrorCode());
                             }
                             finally {
                                 if (stmt != null) {
@@ -1785,9 +1796,9 @@ public class Interface {
                                         }
                                         catch (SQLException ex){
                                             // handle any errors
-                                            System.out.println("SQLException: " + ex.getMessage());
-                                            System.out.println("SQLState: " + ex.getSQLState());
-                                            System.out.println("VendorError: " + ex.getErrorCode());
+//                                            System.out.println("SQLException: " + ex.getMessage());
+//                                            System.out.println("SQLState: " + ex.getSQLState());
+//                                            System.out.println("VendorError: " + ex.getErrorCode());
                                         }
                                         finally {
                                             if (stmt != null) {
@@ -1807,9 +1818,9 @@ public class Interface {
                             }
                             catch (SQLException ex){
                                 // handle any errors
-                                System.out.println("SQLException: " + ex.getMessage());
-                                System.out.println("SQLState: " + ex.getSQLState());
-                                System.out.println("VendorError: " + ex.getErrorCode());
+//                                System.out.println("SQLException: " + ex.getMessage());
+//                                System.out.println("SQLState: " + ex.getSQLState());
+//                                System.out.println("VendorError: " + ex.getErrorCode());
                             }
                             finally {
                                 if (stmt != null) {
@@ -1867,9 +1878,9 @@ public class Interface {
         }
         catch (SQLException ex){
             // handle any errors
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+//            System.out.println("SQLException: " + ex.getMessage());
+//            System.out.println("SQLState: " + ex.getSQLState());
+//            System.out.println("VendorError: " + ex.getErrorCode());
 
             return false;
         }
@@ -1906,9 +1917,9 @@ public class Interface {
         }
         catch (SQLException ex){
             // handle any errors
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+//            System.out.println("SQLException: " + ex.getMessage());
+//            System.out.println("SQLState: " + ex.getSQLState());
+//            System.out.println("VendorError: " + ex.getErrorCode());
 
         }
         finally {
@@ -1949,9 +1960,9 @@ public class Interface {
         }
         catch (SQLException ex){
             // handle any errors
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+//            System.out.println("SQLException: " + ex.getMessage());
+//            System.out.println("SQLState: " + ex.getSQLState());
+//            System.out.println("VendorError: " + ex.getErrorCode());
         }
         finally {
             if (stmt != null) {
@@ -1976,9 +1987,9 @@ public class Interface {
         }
         catch (SQLException ex){
             // handle any errors
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+//            System.out.println("SQLException: " + ex.getMessage());
+//            System.out.println("SQLState: " + ex.getSQLState());
+//            System.out.println("VendorError: " + ex.getErrorCode());
 
         }
         finally {
@@ -2015,9 +2026,9 @@ public class Interface {
             }
             catch (SQLException ex){
                 // handle any errors
-                System.out.println("SQLException: " + ex.getMessage());
-                System.out.println("SQLState: " + ex.getSQLState());
-                System.out.println("VendorError: " + ex.getErrorCode());
+//                System.out.println("SQLException: " + ex.getMessage());
+//                System.out.println("SQLState: " + ex.getSQLState());
+//                System.out.println("VendorError: " + ex.getErrorCode());
 
             }
             finally {
@@ -2053,9 +2064,9 @@ public class Interface {
             }
             catch (SQLException ex){
                 // handle any errors
-                System.out.println("SQLException: " + ex.getMessage());
-                System.out.println("SQLState: " + ex.getSQLState());
-                System.out.println("VendorError: " + ex.getErrorCode());
+//                System.out.println("SQLException: " + ex.getMessage());
+//                System.out.println("SQLState: " + ex.getSQLState());
+//                System.out.println("VendorError: " + ex.getErrorCode());
 
             }
             finally {
@@ -2094,9 +2105,9 @@ public class Interface {
         }
         catch (SQLException ex){
             // handle any errors
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+//            System.out.println("SQLException: " + ex.getMessage());
+//            System.out.println("SQLState: " + ex.getSQLState());
+//            System.out.println("VendorError: " + ex.getErrorCode());
 
         }
         finally {
@@ -2132,9 +2143,9 @@ public class Interface {
         }
         catch (SQLException ex){
             // handle any errors
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+//            System.out.println("SQLException: " + ex.getMessage());
+//            System.out.println("SQLState: " + ex.getSQLState());
+//            System.out.println("VendorError: " + ex.getErrorCode());
 
         }
         finally {
@@ -2167,8 +2178,6 @@ public class Interface {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
         } catch (Exception ex) {
             // handle the error
-            System.out.println(ex);
-
             return false;
         }
 
@@ -2185,13 +2194,8 @@ public class Interface {
             stmt = conn.createStatement();
             rs = stmt.executeQuery("USE jdressel_db");
 
-        } catch (SQLException ex){
+        } catch (SQLException e){
             // handle exception
-
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-
             return false;
         }
 
