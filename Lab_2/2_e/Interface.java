@@ -85,7 +85,11 @@ public class Interface {
 
             cmd = sc.nextLine();
 
-            if (cmd.equals("register")){
+            if (cmd.equals("exit")){
+                return true;
+            }
+
+            else if (cmd.equals("register")){
 
                 System.out.print("First Name: ");
                 String fName = sc.nextLine();
@@ -837,7 +841,12 @@ public class Interface {
 
             cmd = sc.nextLine();
 
-            if (cmd.equals("register")){
+
+            if (cmd.equals("exit")){
+                return true;
+            }
+
+            else if (cmd.equals("register")){
 
                 System.out.print("First Name: ");
                 String fName = sc.nextLine();
@@ -1399,7 +1408,10 @@ public class Interface {
 
             cmd = sc.nextLine();
 
-            if (cmd.equals("register")){
+            if (cmd.equals("exit")){
+                return true;
+            }
+            else if (cmd.equals("register")){
 
                 System.out.print("First Name: ");
                 String fName = sc.nextLine();
@@ -1543,7 +1555,7 @@ public class Interface {
                         if (revIdS.equals("exit")){
                             return true;
                         }
-                        
+
                         rev_id = Integer.parseInt(revIdS);
 
                         logged_in = login(REVIEWER, rev_id);
