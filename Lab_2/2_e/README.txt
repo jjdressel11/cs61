@@ -9,7 +9,6 @@ README.txt
 
 README describing contents of the zip file.
 
-
 setup.sql
 
 SQL code that setups up tables in database. Has been previously submitted, but has some minor updates that allow the tables to work in accordance with the front-end interface by the rules of the instructions.
@@ -25,3 +24,16 @@ Java code that includes the front-end interface for the database. Some important
 -if any user is prompted to enter an ID or another kind of integer, the user must enter an integer. 
 
 Other than those rules, the user interface should be very straightforward by following the prompts.
+
+
+TO COMPILE AND RUN:
+
+Please have the mysql-connector jar located in the same directory as the Interface.java file.
+
+To compile:
+
+javac -cp ".:./mysql-connector-java-5.1.42-bin.jar" Interface.java
+
+To run:
+
+java -cp ".:./mysql-connector-java-5.1.42-bin.jar" Interface
