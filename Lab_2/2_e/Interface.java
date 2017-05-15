@@ -99,17 +99,51 @@ public class Interface {
                 register_editor(fName, lName);
 
                 System.out.println(fName+" "+lName+" is registered.");
+
+                String edID = "";
+                Statement stmt = null;
+                ResultSet rs = null;
+
+                edID = "SELECT * FROM editor WHERE first_name = '"+fName+"' AND last_name = '"+lName+"'";
+
+                try {
+                    stmt = conn.createStatement();
+                    rs = stmt.executeQuery(edID);
+
+                    while (rs.next()) {
+                        String id = rs.getString(1);
+                        System.out.println("Your ID is: " + id);
+                    }
+                }
+                catch (SQLException ex){
+                    // handle any errors
+//            System.out.println("SQLException: " + ex.getMessage());
+//            System.out.println("SQLState: " + ex.getSQLState());
+//            System.out.println("VendorError: " + ex.getErrorCode());
+
+                }
+                finally {
+                    if (rs != null) {
+                        try {
+                            rs.close();
+                        } catch (SQLException sqlEx) { } // ignore
+
+                        rs = null;
+                    }
+                    if (stmt != null) {
+                        try {
+                            stmt.close();
+                        } catch (SQLException sqlEx) { } // ignore
+
+                        stmt = null;
+                    }
+                }
             }
 
             else if (cmd.equals("login")){
 
                 System.out.print("Enter your ID: ");
                 String edidS = sc.nextLine();
-
-                if (edidS.equals("exit")){
-                    return true;
-                }
-
                 int editor_id = Integer.parseInt(edidS);
 
                 logged_in = login(EDITOR, editor_id);
@@ -117,11 +151,6 @@ public class Interface {
                 while (!logged_in) {
                     System.out.print("Sorry, re-enter your ID: ");
                     edidS = sc.nextLine();
-
-                    if (edidS.equals("exit")){
-                        return true;
-                    }
-
                     editor_id = Integer.parseInt(edidS);
 
                     logged_in = login(EDITOR, editor_id);
@@ -813,7 +842,6 @@ public class Interface {
 
                     else if (cmd.equals("exit")){
                         exit = true;
-                        return true;
                     }
                 }
 
@@ -860,16 +888,50 @@ public class Interface {
                 register_author(fName, lName, email, address);
 
                 System.out.println(fName+" "+lName+" is registered.");
+
+                String authID = "";
+                Statement stmt = null;
+                ResultSet rs = null;
+
+                authID = "SELECT * FROM author WHERE first_name = '"+fName+"' AND last_name = '"+lName+"'";
+
+                try {
+                    stmt = conn.createStatement();
+                    rs = stmt.executeQuery(authID);
+
+                    while (rs.next()) {
+                        String id = rs.getString(1);
+                        System.out.println("Your ID is: " + id);
+                    }
+                }
+                catch (SQLException ex){
+                    // handle any errors
+//            System.out.println("SQLException: " + ex.getMessage());
+//            System.out.println("SQLState: " + ex.getSQLState());
+//            System.out.println("VendorError: " + ex.getErrorCode());
+
+                }
+                finally {
+                    if (rs != null) {
+                        try {
+                            rs.close();
+                        } catch (SQLException sqlEx) { } // ignore
+
+                        rs = null;
+                    }
+                    if (stmt != null) {
+                        try {
+                            stmt.close();
+                        } catch (SQLException sqlEx) { } // ignore
+
+                        stmt = null;
+                    }
+                }
             }
             else if (cmd.equals("login")){
 
                 System.out.print("Enter your ID: ");
                 String authIdS = sc.nextLine();
-
-                if (authIdS.equals("exit")){
-                    return true;
-                }
-
                 int author_id = Integer.parseInt(authIdS);
 
                     logged_in = login(AUTHOR, author_id);
@@ -877,12 +939,6 @@ public class Interface {
                     while (!logged_in) {
                         System.out.print("Sorry, re-enter your ID: ");
                         authIdS = sc.nextLine();
-
-                        if (authIdS.equals("exit")){
-                            return true;
-                        }
-
-
                         author_id = Integer.parseInt(authIdS);
 
                         logged_in = login(AUTHOR, author_id);
@@ -1440,6 +1496,45 @@ public class Interface {
                 register_reviewer(fName, lName, ri_code_string, ri_code_string2, ri_code_string3);
 
                 System.out.println(fName+" "+lName+" is registered.");
+
+                String revID = "";
+                Statement stmt = null;
+                ResultSet rs = null;
+
+                revID = "SELECT * FROM reviewer WHERE first_name = '"+fName+"' AND last_name = '"+lName+"'";
+
+                try {
+                    stmt = conn.createStatement();
+                    rs = stmt.executeQuery(revID);
+
+                    while (rs.next()) {
+                        String id = rs.getString(1);
+                        System.out.println("Your ID is: " + id);
+                    }
+                }
+                catch (SQLException ex){
+                    // handle any errors
+//            System.out.println("SQLException: " + ex.getMessage());
+//            System.out.println("SQLState: " + ex.getSQLState());
+//            System.out.println("VendorError: " + ex.getErrorCode());
+
+                }
+                finally {
+                    if (rs != null) {
+                        try {
+                            rs.close();
+                        } catch (SQLException sqlEx) { } // ignore
+
+                        rs = null;
+                    }
+                    if (stmt != null) {
+                        try {
+                            stmt.close();
+                        } catch (SQLException sqlEx) { } // ignore
+
+                        stmt = null;
+                    }
+                }
             }
 
             else if (cmd.equals("resign")) {
@@ -1538,12 +1633,6 @@ public class Interface {
 
                 System.out.print("Enter your ID: ");
                 String revIdS = sc.nextLine();
-
-                if (revIdS.equals("exit")){
-                    return true;
-                }
-
-
                 int rev_id = Integer.parseInt(revIdS);
 
                     logged_in = login(REVIEWER, rev_id);
@@ -1555,7 +1644,7 @@ public class Interface {
                         if (revIdS.equals("exit")){
                             return true;
                         }
-
+                        
                         rev_id = Integer.parseInt(revIdS);
 
                         logged_in = login(REVIEWER, rev_id);
