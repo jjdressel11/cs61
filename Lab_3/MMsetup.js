@@ -7,6 +7,7 @@ db.issue.drop();
 db.reviewer.drop();
 db.RICodes.drop();
 db.manuscript_review.drop();
+db.counters.drop();
 
 // create the collections
 db.createCollection("manuscript",
@@ -651,6 +652,7 @@ db.author.insertMany(
     }
   ]);
 
+// insert reviewers
 db.reviewer.insertMany([
     {
         _id : getNextSequence("reviewer_ID"),
@@ -724,6 +726,7 @@ db.reviewer.insertMany([
     }
 ]);
 
+// insert manuscripts
 db.manuscript.insertMany([
     {
         _id : getNextSequence("manuscript_ID"),
