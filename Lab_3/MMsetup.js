@@ -9,14 +9,94 @@ db.RICodes.drop();
 db.manuscript_review.drop();
 
 // create the collections
-db.createCollection("manuscript");
-db.createCollection("editor");
-db.createCollection("author");
-db.createCollection("secondary_author");
-db.createCollection("issue");
-db.createCollection("reviewer");
-db.createCollection("RICodes");
-db.createCollection("manuscript_review");
+db.createCollection("manuscript",
+   { validator: { $or:
+      [
+         { _id: { $type: "number" } },
+         { editor_ID: { $type: "number" } },
+         { author_ID: { $type: "number" } },
+         { title: { $type: "string" } },
+         { status: { $type: "string" } },
+         { status_time_stamp: { $type: "string" } },
+         { RI_Code: { $type: "number" } }
+      ]
+   }
+});
+db.createCollection("editor",
+    { validator: { $or:
+      [
+         { _id: { $type: "number" } },
+         { first_name: { $type: "string" } },
+         { last_name: { $type: "string" } },
+
+      ]
+   }
+});
+db.createCollection("author",
+    { validator: { $or:
+      [
+         { _id: { $type: "number" } },
+         { first_name: { $type: "string" } },
+         { last_name: { $type: "string" } },
+         { address: { $type: "string" } },
+         { email: { $type: "string" } },
+         { affiliation: { $type: "string" } }
+      ]
+   }
+});
+db.createCollection("secondary_author",
+    { validator: { $or:
+      [
+         { manuscript_ID: { $type: "number" } },
+         { rank: { $type: "number" } },
+         { first_name: { $type: "string" } },
+         { last_name: { $type: "string" } }
+      ]
+   }
+});
+db.createCollection("issue",
+    { validator: { $or:
+      [
+         { pub_year: { $type: "number" } },
+         { period_num: { $type: "number" } },
+         { total_pages: { $type: "number" } },
+         { print_date: { $type: "string" } }
+      ]
+   }
+});
+db.createCollection("reviewer",
+    { validator: { $or:
+      [
+         { _id: { $type: "number" } },
+         { first_name: { $type: "string" } },
+         { last_name: { $type: "string" } },
+         { email: { $type: "string" } },
+         { affiliation: { $type: "string" } }
+      ]
+   }
+});
+db.createCollection("RICodes",
+    { validator: { $or:
+      [
+         { _id: { $type: "number" } },
+         { interest: { $type: "string" } }
+      ]
+   }
+});
+db.createCollection("manuscript_review",
+    { validator: { $or:
+      [
+         { manuscript_ID: { $type: "number" } },
+         { reviewer_ID: { $type: "number" } },
+         { date_assigned: { $type: "string" } },
+         { appropriateness: { $type: "number" } },
+         { clarity: { $type: "number" } },
+         { contribution: { $type: "number" } },
+         { recommendation: { $type: "string" } },
+         { date_reviewed: { $type: "string" } }
+      ]
+   }
+});
 
 // set up counter for increasing RI_Code id
 db.counters.insert(
@@ -573,70 +653,70 @@ db.author.insertMany(
 
 db.reviewer.insertMany([
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Evelyn",
         last_name : "Adams",
         email: "massa.non@ligula.edu",
         affiliation: "Eu Arcu Morbi Associates"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Tasha",
         last_name : "Clarke",
         email: "isus.varius@consectetueradipiscingelit.org",
         affiliation: "Risus Quis Associates"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Davis",
         last_name : "Marks",
         email: "sed.facilisis@Maecenasmalesuadafringilla.org",
         affiliation: "Mus LLC"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Yuli",
         last_name : "Gordon",
         email: "nisi@Nullamvelitdui.ca",
         affiliation: "Malesuada PC"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Cameron",
         last_name : "Vazquez",
         email: "vel@montesnascetur.edu",
         affiliation: "Nunc Company"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Victoria",
         last_name : "Acevedo",
         email: "eu.lacus.Quisque@aliquetdiam.org",
         affiliation: "At Pede Incorporated"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Brenna",
         last_name : "Morrow",
         email: "risus.In.mi@miAliquamgravida.net",
         affiliation: "Ultrices Posuere Foundation"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Kato",
         last_name : "Serrano",
         email: "id.enim@Sedeueros.ca",
         affiliation: "Sed Industries"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Judah",
         last_name : "Conway",
         email: "massa.rutrum.magna@Utnec.ca",
         affiliation: "Dolor Tempus Non LLC"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Gretchen",
         last_name : "George",
         email: "porttitor.scelerisque@adipiscing.edu",
@@ -932,5 +1012,206 @@ db.manuscript.insertMany([
         status : "in typesetting",
         status_time_stamp : "Wed Jun 14th 2017 08:06:22",
         RI_Code : 108
+    }
+]);
+
+db.manuscript_review.insertMany([
+    {
+        manuscript_ID : 8,
+        reviewer_ID : 10,
+        date_assigned : "Sun Oct 22 2017 01:10:49",
+        appropriateness : 8,
+        clarity : 7,
+        methodology : 6,
+        contribution : 2,
+        recommendation : "accept",
+        date_reviewed : "Fri Jun 09 2017 12:06:14"
+    },
+    {
+        manuscript_ID : 2,
+        reviewer_ID : 9,
+        date_assigned : "Sun Jun 25 2017 07:06:42",
+        appropriateness : 4,
+        clarity : 7,
+        methodology : 10,
+        contribution : 10,
+        recommendation : "reject",
+        date_reviewed : "Tue Mar 13 2018 12:03:13"
+    },
+    {
+        manuscript_ID : 9,
+        reviewer_ID : 1,
+        date_assigned : "Thu Jan 18 2018 10:01:18",
+        appropriateness : 6,
+        clarity : 1,
+        methodology : 5,
+        contribution : 10,
+        recommendation : "reject",
+        date_reviewed : "Sun Feb 18 2018 09:02:58"
+    },
+    {
+        manuscript_ID : 7,
+        reviewer_ID : 5,
+        date_assigned : "Wed Jul 13 2016 07:07:53",
+        appropriateness : 10,
+        clarity : 10,
+        methodology : 10,
+        contribution : 9,
+        recommendation : "accept",
+        date_reviewed : "Sat Feb 18 2017 07:02:37"
+    },
+    {
+        manuscript_ID : 1,
+        reviewer_ID : 9,
+        date_assigned : "Sun Jul 31 2016 12:07:20",
+        appropriateness : 5,
+        clarity : 8,
+        methodology : 1,
+        contribution : 9,
+        recommendation : "reject",
+        date_reviewed : "Tue Oct 24 2017 04:10:17"
+    },
+    {
+        manuscript_ID : 4,
+        reviewer_ID : 7,
+        date_assigned : "Wed Sep 13 2017 03:09:51",
+        appropriateness : 6,
+        clarity : 9,
+        methodology : 4,
+        contribution : 10,
+        recommendation : "reject",
+        date_reviewed : "Sun Oct 16 2016 12:10:47"
+    },
+    {
+        manuscript_ID : 1,
+        reviewer_ID : 6,
+        date_assigned : "Tue Aug 29 2017 12:08:13",
+        appropriateness : 4,
+        clarity : 5,
+        methodology : 1,
+        contribution : 3,
+        recommendation : "reject",
+        date_reviewed : "Sat Mar 31 2018 01:03:51"
+    },
+    {
+        manuscript_ID : 6,
+        reviewer_ID : 4,
+        date_assigned : "Mon Feb 12 2018 05:02:20",
+        appropriateness : 6,
+        clarity : 8,
+        methodology : 5,
+        contribution : 7,
+        recommendation : "reject",
+        date_reviewed : "Tue Jun 20 2017 06:06:07"
+    },
+    {
+        manuscript_ID : 4,
+        reviewer_ID : 1,
+        date_assigned : "Sat Nov 11 2017 05:11:47",
+        appropriateness : 9,
+        clarity : 3,
+        methodology : 9,
+        contribution : 1,
+        recommendation : "accept",
+        date_reviewed : "Sun Sep 03 2017 02:09:48"
+    },
+    {
+        manuscript_ID : 2,
+        reviewer_ID : 7,
+        date_assigned : "Wed Aug 24 2016 09:08:54",
+        appropriateness : 4,
+        clarity : 2,
+        methodology : 8,
+        contribution : 8,
+        recommendation : "accept",
+        date_reviewed : "Thu Aug 04 2016 04:08:33"
+    },
+    {
+        manuscript_ID : 6,
+        reviewer_ID : 3,
+        date_assigned : "Sun Sep 18 2016 05:09:56",
+        appropriateness : 2,
+        clarity : 5,
+        methodology : 5,
+        contribution : 6,
+        recommendation : "reject",
+        date_reviewed : "Sun May 29 2016 02:05:44"
+    },
+    {
+        manuscript_ID : 4,
+        reviewer_ID : 10,
+        date_assigned : "Thu Nov 03 2016 05:11:05",
+        appropriateness : 6,
+        clarity : 2,
+        methodology : 5,
+        contribution : 5,
+        recommendation : "reject",
+        date_reviewed : "Fri Mar 10 2017 06:03:09"
+    },
+    {
+        manuscript_ID : 4,
+        reviewer_ID : 10,
+        date_assigned : "Tue Apr 10 2018 12:04:07",
+        appropriateness : 9,
+        clarity : 10,
+        methodology : 9,
+        contribution : 3,
+        recommendation : "accept",
+        date_reviewed : "Sat Sep 10 2016 05:09:14"
+    },
+    {
+        manuscript_ID : 10,
+        reviewer_ID : 1,
+        date_assigned : "Mon Oct 30 2017 12:10:58",
+        appropriateness : 9,
+        clarity : 3,
+        methodology : 2,
+        contribution : 5,
+        recommendation : "reject",
+        date_reviewed : "Mon May 22 2017 09:05:38"
+    },
+    {
+        manuscript_ID : 10,
+        reviewer_ID : 5,
+        date_assigned : "Thu Oct 13 2016 12:10:51",
+        appropriateness : 2,
+        clarity : 7,
+        methodology : 8,
+        contribution : 6,
+        recommendation : "accept",
+        date_reviewed : "Tue Feb 06 2018 11:02:21"
+    },
+    {
+        manuscript_ID : 1,
+        reviewer_ID : 3,
+        date_assigned : "Fri Feb 24 2017 02:02:14",
+        appropriateness : 3,
+        clarity : 4,
+        methodology : 2,
+        contribution : 5,
+        recommendation : "reject",
+        date_reviewed : "Sat Apr 08 2017 06:04:13"
+    },
+    {
+        manuscript_ID : 2,
+        reviewer_ID : 3,
+        date_assigned : "Fri Apr 28 2017 08:04:01",
+        appropriateness : 10,
+        clarity : 4,
+        methodology : 1,
+        contribution : 5,
+        recommendation : "accept",
+        date_reviewed : "Tue May 30 2017 09:05:40"
+    },
+    {
+        manuscript_ID : 6,
+        reviewer_ID : 7,
+        date_assigned : "Tue Apr 04 2017 11:04:29",
+        appropriateness : 6,
+        clarity : 1,
+        methodology : 10,
+        contribution : 8,
+        recommendation : "reject",
+        date_reviewed : "Thu Nov 23 2017 12:11:46"
     }
 ]);
