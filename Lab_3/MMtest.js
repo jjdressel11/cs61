@@ -1,6 +1,6 @@
 // MMtest.js
 
-// testing operations of the interface
+// Testing operations of the interface
 
 // Editor
 
@@ -22,18 +22,34 @@ db.manuscript.update(
    }}
 )
 
-db.manuscript.insert(
-  {
-    _id : getNextSequence("manuscript_ID"),
-    editor_ID : 3,
-    author_ID : 5,
-    title : "TITLE",
-    status : "submitted",
-    status_time_stamp : Date().toString(),
-    RI_Code : 33
-  }
+// add typesetting information to manuscript
+db.manuscript.update(
+  {_id : 5},
+  {$set : {
+    num_pages : 44,
+    order_in_issue : 5,
+    start_page : 11,
+    pub_year : 2011,
+    period_num : 3
+  }}
 )
 
-// Author
+// Author retracting manuscript
+db.manuscript.remove(
+  {_id : 116}
+)
 
 // Reviewer
+
+// adding reviewer's ratings to a manuscript
+db.manuscript_review.update(
+  {manuscript_ID : 1},
+  {$set : {
+    appropriateness : 4,
+    clarity : 2,
+    methodology : 8,
+    contribution : 9,
+    recommendation : "accept",
+    date_reviewed : Date().toString()
+  }}
+)

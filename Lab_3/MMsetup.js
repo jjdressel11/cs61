@@ -7,6 +7,7 @@ db.issue.drop();
 db.reviewer.drop();
 db.RICodes.drop();
 db.manuscript_review.drop();
+db.counters.drop();
 
 // create the collections
 db.createCollection("manuscript");
@@ -17,6 +18,7 @@ db.createCollection("issue");
 db.createCollection("reviewer");
 db.createCollection("RICodes");
 db.createCollection("manuscript_review");
+db.createCollection("counters");
 
 // set up counter for increasing RI_Code id
 db.counters.insert(
@@ -571,72 +573,73 @@ db.author.insertMany(
     }
   ]);
 
+// insert reviewers
 db.reviewer.insertMany([
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Evelyn",
         last_name : "Adams",
         email: "massa.non@ligula.edu",
         affiliation: "Eu Arcu Morbi Associates"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Tasha",
         last_name : "Clarke",
         email: "isus.varius@consectetueradipiscingelit.org",
         affiliation: "Risus Quis Associates"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Davis",
         last_name : "Marks",
         email: "sed.facilisis@Maecenasmalesuadafringilla.org",
         affiliation: "Mus LLC"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Yuli",
         last_name : "Gordon",
         email: "nisi@Nullamvelitdui.ca",
         affiliation: "Malesuada PC"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Cameron",
         last_name : "Vazquez",
         email: "vel@montesnascetur.edu",
         affiliation: "Nunc Company"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Victoria",
         last_name : "Acevedo",
         email: "eu.lacus.Quisque@aliquetdiam.org",
         affiliation: "At Pede Incorporated"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Brenna",
         last_name : "Morrow",
         email: "risus.In.mi@miAliquamgravida.net",
         affiliation: "Ultrices Posuere Foundation"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Kato",
         last_name : "Serrano",
         email: "id.enim@Sedeueros.ca",
         affiliation: "Sed Industries"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Judah",
         last_name : "Conway",
         email: "massa.rutrum.magna@Utnec.ca",
         affiliation: "Dolor Tempus Non LLC"
     },
     {
-        _id : getNextSequence("editor_ID"),
+        _id : getNextSequence("reviewer_ID"),
         first_name : "Gretchen",
         last_name : "George",
         email: "porttitor.scelerisque@adipiscing.edu",
@@ -644,6 +647,7 @@ db.reviewer.insertMany([
     }
 ]);
 
+// insert manuscripts
 db.manuscript.insertMany([
     {
         _id : getNextSequence("manuscript_ID"),
