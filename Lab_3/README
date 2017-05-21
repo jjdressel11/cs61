@@ -1,0 +1,5 @@
+getting rid of the affiliation table, just saving someone's affiliation as an attribute
+
+getting rid of the manuscript_final table, just going to add attributes of manuscript_final when something is in typeset mode
+
+getting rid of reviewer_interest - just going to save reviewer RI_Code in their reviewer collection

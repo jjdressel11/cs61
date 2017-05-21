@@ -1,11 +1,22 @@
-db.createCollection("manuscript")
-db.createCollection("editor")
-db.createCollection("author")
-db.createCollection("secondary_author")
-db.createCollection("issue")
-db.createCollection("reviewer")
-db.createCollection("RICodes")
-db.createCollection("manuscript_review")
+// drop the collections if they exist
+db.manuscript.drop();
+db.editor.drop();
+db.author.drop();
+db.secondary_author.drop();
+db.issue.drop();
+db.reviewer.drop();
+db.RICodes.drop();
+db.manuscript_review.drop();
+
+// create the collections
+db.createCollection("manuscript");
+db.createCollection("editor");
+db.createCollection("author");
+db.createCollection("secondary_author");
+db.createCollection("issue");
+db.createCollection("reviewer");
+db.createCollection("RICodes");
+db.createCollection("manuscript_review");
 
 // set up counter for increasing RI_Code id
 db.counters.insert(
@@ -23,6 +34,30 @@ db.counters.insert(
    }
 );
 
+// counter for increasing reviewer id
+db.counters.insert(
+   {
+      "_id": "reviewer_ID",
+      "seq": 0
+   }
+);
+
+// counter for increasing author id
+db.counters.insert(
+   {
+      "_id": "author_ID",
+      "seq": 0
+   }
+);
+
+db.counters.insert(
+   {
+      "_id": "manuscript_ID",
+      "seq": 0
+   }
+);
+
+// function for increasing a counter
 function getNextSequence(name) {
    var ret = db.counters.findAndModify(
           {
@@ -35,11 +70,7 @@ function getNextSequence(name) {
    return ret.seq;
 }
 
-db.editor.insert(
-  {_id : getNextSequence("editor_ID"),
-  first_name : "Julia",
-  last_name : "Dressel"}
-)
+
 
 // insert RICodes with iterating _id
 db.RICodes.insertMany([
@@ -417,4 +448,125 @@ db.RICodes.insertMany([
 {
     _id: getNextSequence("RI_Code"),
     interest:'Systems engineering'}
-])
+]);
+
+
+// insert 10 editors with incrementing _id
+db.editor.insertMany([
+  {_id : getNextSequence("editor_ID"),
+  first_name : "Kirsten",
+  last_name : "Wilcox"},
+  {_id : getNextSequence("editor_ID"),
+  first_name : "Zelda",
+  last_name : "Vaughan"},
+  {_id : getNextSequence("editor_ID"),
+  first_name : "Imelda",
+  last_name : "Washington"},
+  {_id : getNextSequence("editor_ID"),
+  first_name : "Martin",
+  last_name : "Hubbard"},
+  {_id : getNextSequence("editor_ID"),
+  first_name : "Chava",
+  last_name : "Workman"},
+  {_id : getNextSequence("editor_ID"),
+  first_name : "Timon",
+  last_name : "Nielsen"},
+  {_id : getNextSequence("editor_ID"),
+  first_name : "Iona",
+  last_name : "Reid"},
+  {_id : getNextSequence("editor_ID"),
+  first_name : "Dorian",
+  last_name : "Fuller"},
+  {_id : getNextSequence("editor_ID"),
+  first_name : "Lynn",
+  last_name : "Castro"},
+  {_id : getNextSequence("editor_ID"),
+  first_name : "Carter",
+  last_name : "Joyner"},
+]);
+
+
+// insert 10 authors
+db.author.insertMany(
+  [
+    {
+      _id : getNextSequence("author_ID"),
+      first_name : "Jordan",
+      last_name : "Erickson",
+      address : "853-3707 In Rd.",
+      email : "enim@necluctus.org",
+      affiliation : "Fringilla Limited"
+    },
+    {
+      _id : getNextSequence("author_ID"),
+      first_name : "Blythe",
+      last_name : "Velasquez",
+      address : "293-2799 Nascetur Ave",
+      email : "orci@penatibusetmagnis.org",
+      affiliation : "Elit Elit Corp."
+    },
+    {
+      _id : getNextSequence("author_ID"),
+      first_name : "Candace",
+      last_name : "Kinney",
+      address : "279-824 Vitae, Rd.",
+      email : "ac@luctusut.edu",
+      affiliation : "Nunc Ullamcorper Consulting"
+    },
+    {
+      _id : getNextSequence("author_ID"),
+      first_name : "Flavia",
+      last_name : "Holt",
+      address : "P.O. Box 849, 3652 Morbi St.",
+      email : "Nunc.quis@Lorem.edu",
+      affiliation : "Ornare Lectus Institute"
+    },
+    {
+      _id : getNextSequence("author_ID"),
+      first_name : "Pearl",
+      last_name : "Ball",
+      address : "P.O. Box 188, 1857 A Street",
+      email : "consequat@Quisque.edu",
+      affiliation : "Sociis Natoque Penatibus Inc."
+    },
+    {
+      _id : getNextSequence("author_ID"),
+      first_name : "Casey",
+      last_name : "Whitaker",
+      address : "P.O. Box 686, 8740 Et, Av.",
+      email : "Cum.sociis@posuerecubilia.com",
+      affiliation : "Erat Semper Rutrum Inc."
+    },
+    {
+      _id : getNextSequence("author_ID"),
+      first_name : "Hedda",
+      last_name : "Shaw",
+      address : "Ap #763-2728 Tellus Av.",
+      email : "nisi@vitae.ca",
+      affiliation : "Malesuada Id Erat Corporation"
+    },
+    {
+      _id : getNextSequence("author_ID"),
+      first_name : "Graiden",
+      last_name : "Brewer",
+      address : "P.O. Box 124, 8009 Nunc Rd.",
+      email : "amet.faucibus@rutrum.com",
+      affiliation : "Mattis Ornare Lectus Company"
+    },
+    {
+      _id : getNextSequence("author_ID"),
+      first_name : "Fredericka",
+      last_name : "Mayer",
+      address : "830 Ornare Rd.",
+      email : "ornare.In@scelerisque.ca",
+      affiliation : "In Ltd"
+    },
+    {
+      _id : getNextSequence("author_ID"),
+      first_name : "Mercedes",
+      last_name : "Levy",
+      address : "244-1307 Magna Ave",
+      email : "in.faucibus@quisaccumsanconvallis.com",
+      affiliation : "Mauris Industries"
+    }
+  ]);
