@@ -17,9 +17,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import org.bson.BsonDocument;
+import org.bson.Document;
+
+import org.bson.BSON;
+import org.bson.BSONObject;
+
 import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.conversions.Bson;
 
 
 public class Interface {
@@ -29,7 +43,7 @@ public class Interface {
     public static final int REVIEWER = 3;
 
     public static Connection conn;
-    public static MongoDatabase db;
+    public static DB db;
 
     public static void main (String args[]) throws IOException {
 
@@ -105,44 +119,22 @@ public class Interface {
 
                 System.out.println(fName+" "+lName+" is registered.");
 
+                DBCollection editor_coll = db.getCollection("editor");
+
+                DBObject query  = new BasicDBObject("first_name", fName).append("last_name", lName);
+
+                DBCursor cursor = editor_coll.find(query);
+
+                DBObject user = cursor.next();
+
+                System.out.println(user);
+
+                System.out.println("Your ID is: " + user.get("_id"));
+
                 String edID = "";
                 Statement stmt = null;
                 ResultSet rs = null;
 
-                edID = "SELECT * FROM editor WHERE first_name = '"+fName+"' AND last_name = '"+lName+"'";
-
-                try {
-                    stmt = conn.createStatement();
-                    rs = stmt.executeQuery(edID);
-
-                    while (rs.next()) {
-                        String id = rs.getString(1);
-                        System.out.println("Your ID is: " + id);
-                    }
-                }
-                catch (SQLException ex){
-                    // handle any errors
-//            System.out.println("SQLException: " + ex.getMessage());
-//            System.out.println("SQLState: " + ex.getSQLState());
-//            System.out.println("VendorError: " + ex.getErrorCode());
-
-                }
-                finally {
-                    if (rs != null) {
-                        try {
-                            rs.close();
-                        } catch (SQLException sqlEx) { } // ignore
-
-                        rs = null;
-                    }
-                    if (stmt != null) {
-                        try {
-                            stmt.close();
-                        } catch (SQLException sqlEx) { } // ignore
-
-                        stmt = null;
-                    }
-                }
             }
 
             else if (cmd.equals("login")){
@@ -161,49 +153,29 @@ public class Interface {
                     logged_in = login(EDITOR, editor_id);
                 }
 
+                // set up collection, query, and cursor
+                DBCollection coll = db.getCollection("editor");
+                DBObject query  = new BasicDBObject("_id", editor_id);
+                DBCursor cursor = coll.find(query);
+
+                DBObject user = cursor.next();
+
+                String first_name = (String)user.get("first_name");
+                String last_name = (String)user.get("last_name");
+
+                System.out.println("Welcome!");
+                System.out.println("Name: " + first_name + " " + last_name);
+
                 String editor = "";
                 Statement stmt = null;
                 ResultSet rs = null;
 
-                editor = "SELECT * FROM editor WHERE editor_ID = " + editor_id + "";
+                String sql_query = "";
 
-                try {
-                    stmt = conn.createStatement();
-                    rs = stmt.executeQuery(editor);
-
-                    while (rs.next()) {
-                        String name = rs.getString(2) + " " + rs.getString(3);
-                        System.out.println("Welcome!");
-                        System.out.println("Name: " + name);
-                    }
-
-                } catch (SQLException ex) {
-                    // handle any errors
-//                    System.out.println("SQLException: " + ex.getMessage());
-//                    System.out.println("SQLState: " + ex.getSQLState());
-//                    System.out.println("VendorError: " + ex.getErrorCode());
-                } finally {
-                    if (rs != null) {
-                        try {
-                            rs.close();
-                        } catch (SQLException sqlEx) {
-                        } // ignore
-
-                        rs = null;
-                    }
-                    if (stmt != null) {
-                        try {
-                            stmt.close();
-                        } catch (SQLException sqlEx) {
-                        } // ignore
-
-                        stmt = null;
-                    }
-                }
-
-                stmt = null;
-                rs = null;
-                String query = "SELECT * FROM manuscript WHERE editor_ID = "+editor_id+" ORDER BY status, manuscript_ID ";
+                // print manuscripts associated with editor
+                query = new BasicDBObject("editor_id",editor_id);
+                coll = db.getCollection("manuscript");
+                cursor = coll.find(query);
 
                 int sub = 0;
                 int ur = 0;
@@ -213,49 +185,26 @@ public class Interface {
                 int sched = 0;
                 int pub = 0;
 
-                try {
-                    stmt = conn.createStatement();
-                    rs = stmt.executeQuery(query);
 
-                    while (rs.next()) {
-                        String status = rs.getString(5);
-                        if (status.equals("submitted")) {
-                            sub++;
-                        } else if (status.equals("under review")) {
-                            ur++;
-                        } else if (status.equals("rejected")) {
-                            rej++;
-                        } else if (status.equals("accepted")) {
-                            acc++;
-                        } else if (status.equals("in typesetting")) {
-                            type++;
-                        } else if (status.equals("scheduled for publication")) {
-                            sched++;
-                        } else if (status.equals("published")) {
-                            pub++;
-                        }
-                    }
-                } catch (SQLException ex) {
-                    // handle any errors
-//                    System.out.println("SQLException: " + ex.getMessage());
-//                    System.out.println("SQLState: " + ex.getSQLState());
-//                    System.out.println("VendorError: " + ex.getErrorCode());
-                } finally {
-                    if (rs != null) {
-                        try {
-                            rs.close();
-                        } catch (SQLException sqlEx) {
-                        } // ignore
+                while (cursor.hasNext()){
+                    DBObject man = cursor.next();
 
-                        rs = null;
-                    }
-                    if (stmt != null) {
-                        try {
-                            stmt.close();
-                        } catch (SQLException sqlEx) {
-                        } // ignore
+                    String status = (String)man.get("status");
 
-                        stmt = null;
+                    if (status.equals("submitted")) {
+                        sub++;
+                    } else if (status.equals("under review")) {
+                        ur++;
+                    } else if (status.equals("rejected")) {
+                        rej++;
+                    } else if (status.equals("accepted")) {
+                        acc++;
+                    } else if (status.equals("in typesetting")) {
+                        type++;
+                    } else if (status.equals("scheduled for publication")) {
+                        sched++;
+                    } else if (status.equals("published")) {
+                        pub++;
                     }
                 }
 
@@ -275,33 +224,16 @@ public class Interface {
 
                     if (cmd.equals("status")){
 
-                        stmt = null;
-                        rs = null;
-                        query="SELECT * FROM manuscript WHERE editor_ID = "+editor_id+" ORDER BY status, manuscript_ID";
+                        // print manuscripts associated with editor
+                        query = new BasicDBObject("editor_id",editor_id);
+                        coll = db.getCollection("manuscript");
+                        cursor = coll.find(query);
 
-                        try {
-                            stmt = conn.createStatement();
-                            rs = stmt.executeQuery(query);
+                        while(cursor.hasNext()){
+                            DBObject man = cursor.next();
 
-                            while (rs.next()) {
-                                String status = "ID: "+rs.getString(1)+", Status: "+rs.getString(5);
-                                System.out.println(status);
-                            }
-                        }
-                        catch (SQLException ex){
-                            // handle any errors
-//                            System.out.println("SQLException: " + ex.getMessage());
-//                            System.out.println("SQLState: " + ex.getSQLState());
-//                            System.out.println("VendorError: " + ex.getErrorCode());
-                        }
-                        finally {
-                            if (stmt != null) {
-                                try {
-                                    stmt.close();
-                                } catch (SQLException sqlEx) { } // ignore
-
-                                stmt = null;
-                            }
+                            String status = "ID: "+ man.get("_id") +", Status: " + man.get("status");
+                            System.out.println(status);
                         }
 
                         System.out.print("Enter another command, or type 'exit': ");
@@ -320,29 +252,12 @@ public class Interface {
 
                         String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
-                        manuAssign = "INSERT INTO manuscript_review (manuscript_ID,reviewer_ID,date_assigned) VALUES ("+manuID+","+revID+",'"+timestamp+"')";
+                        coll = db.getCollection("manuscript_review");
+                        query = new BasicDBObject("manuscript_id", manuID).append("reviewer_id",revID).append("date_assigned",timestamp);
 
-                        try {
-                            stmt = conn.createStatement();
-                            stmt.executeUpdate(manuAssign);
-                            System.out.println("Assigned on: " + timestamp);
-                        }
-                        catch (SQLException ex){
-                            // handle any errors
-                            System.out.println("Sorry, either the manuscript ID or the reviewer ID is not valid.");
-//                            System.out.println("SQLException: " + ex.getMessage());
-//                            System.out.println("SQLState: " + ex.getSQLState());
-//                            System.out.println("VendorError: " + ex.getErrorCode());
-                        }
-                        finally {
-                            if (stmt != null) {
-                                try {
-                                    stmt.close();
-                                } catch (SQLException sqlEx) { } // ignore
+                        coll.insert(query);
+                        System.out.println("Assigned on: " + timestamp);
 
-                                stmt = null;
-                            }
-                        }
 
                         String manuReview = "";
                         stmt = null;
@@ -738,12 +653,12 @@ public class Interface {
 
                         stmt = null;
                         rs = null;
-                        query = "SELECT * FROM manuscript_final WHERE pub_year = "+issueYear+" AND period_num = "+issuePer+"";
+                        sql_query = "SELECT * FROM manuscript_final WHERE pub_year = "+issueYear+" AND period_num = "+issuePer+"";
 
 
                         try {
                             stmt = conn.createStatement();
-                            rs = stmt.executeQuery(query);
+                            rs = stmt.executeQuery(sql_query);
 
                             while (rs.next()) {
                                 numManus++;
@@ -777,16 +692,16 @@ public class Interface {
                             String issuePub = "";
                             stmt = null;
                             rs = null;
-                            query="";
+                            sql_query="";
                             int man_ID = 0;
 
                             String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
-                            query = "SELECT * FROM manuscript_final WHERE pub_year = "+issueYear+" AND period_num = "+issuePer+"";
+                            sql_query = "SELECT * FROM manuscript_final WHERE pub_year = "+issueYear+" AND period_num = "+issuePer+"";
 
                             try {
                                 stmt = conn.createStatement();
-                                rs = stmt.executeQuery(query);
+                                rs = stmt.executeQuery(sql_query);
                                 System.out.println("Published on: " + timestamp);
 
                                 while (rs.next()) {
@@ -889,10 +804,26 @@ public class Interface {
                 String email = sc.nextLine();
                 System.out.print("Address: ");
                 String address = sc.nextLine();
+                System.out.print("Affiliation: ");
+                String affiliation = sc.nextLine();
 
-                register_author(fName, lName, email, address);
+                register_author(fName, lName, email, address, affiliation);
 
                 System.out.println(fName+" "+lName+" is registered.");
+
+                DBCollection editor_coll = db.getCollection("author");
+
+                DBObject query  = new BasicDBObject("first_name", fName).append("last_name", lName);
+
+                DBCursor cursor = editor_coll.find(query);
+
+                DBObject user = cursor.next();
+
+                System.out.println(user);
+
+                System.out.println("Your ID is: " + user.get("_id"));
+
+
 
                 String authID = "";
                 Statement stmt = null;
@@ -1991,318 +1922,108 @@ public class Interface {
 
     public static boolean login(int user_type, int user_ID){
 
-        String query = "";
-        Statement stmt = null;
-        ResultSet rs = null;
+        DBObject query  = new BasicDBObject("_id", user_ID);
+        DBCollection coll;
+
 
         if (user_type == EDITOR){
-            query = "SELECT * FROM editor";
+            coll = db.getCollection("editor");
         } else if (user_type == AUTHOR){
-            query = "SELECT * FROM author";
+            coll = db.getCollection("author");
         } else {
-            query = "SELECT * FROM reviewer";
+            coll = db.getCollection("reviewer");
         }
 
-        try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(query);
+        DBCursor cursor = coll.find(query);
 
-            while(rs.next()) {
-
-                // user found in system
-                if (user_ID == rs.getInt(1)){
-                    return true;
-                }
-            }
-        }
-        catch (SQLException ex){
-            // handle any errors
-//            System.out.println("SQLException: " + ex.getMessage());
-//            System.out.println("SQLState: " + ex.getSQLState());
-//            System.out.println("VendorError: " + ex.getErrorCode());
-
+        // return false if no objects in cursor
+        if (!cursor.hasNext()){
             return false;
         }
-        finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException sqlEx) { } // ignore
 
-                rs = null;
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException sqlEx) { } // ignore
+//        try {
+//            while(cursor.hasNext()) {
+//                System.out.println(cursor.next());
+//            }
+//        } finally {
+//            cursor.close();
+//        }
 
-                stmt = null;
-            }
-        }
 
-        return false;
+        return true;
     }
 
     public static void register_reviewer(String fName, String lName, String ri1, String ri2, String ri3) {
-        String reviewer = "";
-        Statement stmt = null;
-        ResultSet rs = null;
+        DBCollection coll = db.getCollection("reviewer");
 
-        reviewer = "INSERT INTO reviewer (first_name,last_name) VALUES ('"+fName+"','"+lName+"')";
+        CommandResult doc1 = db.command(new BasicDBObject("$eval", "getNextSequence(\"author_id\")"));
 
-        try {
-            stmt = conn.createStatement();
-            stmt.executeUpdate(reviewer);
-        }
-        catch (SQLException ex){
-            // handle any errors
-//            System.out.println("SQLException: " + ex.getMessage());
-//            System.out.println("SQLState: " + ex.getSQLState());
-//            System.out.println("VendorError: " + ex.getErrorCode());
+        Double rev_id = (Double)doc1.get("retval");
 
-        }
-        finally {
+        int id = rev_id.intValue();
 
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException sqlEx) { } // ignore
+        System.out.println(id);
 
-                rs = null;
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException sqlEx) { } // ignore
+        DBObject user = new BasicDBObject("_id", id)
+                .append("first_name", fName)
+                .append("last_name", lName);
 
-                stmt = null;
-            }
-        }
-
-        stmt = null;
-        rs = null;
-        String query="";
-        int rev_id = 0;
-
-        query = "SELECT * FROM reviewer WHERE first_name = '"+fName+"' AND last_name = '"+lName+"'";
-
-        try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(query);
-            ResultSetMetaData rsmd = rs.getMetaData();
-
-            int columnsNumber = rsmd.getColumnCount();
-            while (rs.next()) {
-                String rev_id_string = rs.getString(1);
-                rev_id = Integer.parseInt(rev_id_string);
-            }
-        }
-        catch (SQLException ex){
-            // handle any errors
-//            System.out.println("SQLException: " + ex.getMessage());
-//            System.out.println("SQLState: " + ex.getSQLState());
-//            System.out.println("VendorError: " + ex.getErrorCode());
-        }
-        finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException sqlEx) { } // ignore
-
-                stmt = null;
-            }
-        }
-
-        int ri_1 = Integer.parseInt(ri1);
-
-        stmt = null;
-        rs = null;
-
-        String reviewerInt = "INSERT INTO reviewer_interest (reviewer_ID,RI_Code) VALUES ("+rev_id+","+ri_1+")";
-
-        try {
-            stmt = conn.createStatement();
-            stmt.executeUpdate(reviewerInt);
-        }
-        catch (SQLException ex){
-            // handle any errors
-//            System.out.println("SQLException: " + ex.getMessage());
-//            System.out.println("SQLState: " + ex.getSQLState());
-//            System.out.println("VendorError: " + ex.getErrorCode());
-
-        }
-        finally {
-
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException sqlEx) { } // ignore
-
-                rs = null;
-            }
-
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException sqlEx) { } // ignore
-
-                stmt = null;
-            }
-        }
-
-
-        if (ri2 != null) {
-            int ri_2 = Integer.parseInt(ri2);
-
-            stmt = null;
-            rs = null;
-
-            reviewerInt = "INSERT INTO reviewer_interest (reviewer_ID,RI_Code) VALUES ("+rev_id+","+ri_2+")";
-
-            try {
-                stmt = conn.createStatement();
-                stmt.executeUpdate(reviewerInt);
-            }
-            catch (SQLException ex){
-                // handle any errors
-//                System.out.println("SQLException: " + ex.getMessage());
-//                System.out.println("SQLState: " + ex.getSQLState());
-//                System.out.println("VendorError: " + ex.getErrorCode());
-
-            }
-            finally {
-
-                if (rs != null) {
-                    try {
-                        rs.close();
-                    } catch (SQLException sqlEx) { } // ignore
-
-                    rs = null;
-                }
-
-                if (stmt != null) {
-                    try {
-                        stmt.close();
-                    } catch (SQLException sqlEx) { } // ignore
-
-                    stmt = null;
-                }
-            }
-        }
-        if (ri3 != null) {
-            int ri_3 = Integer.parseInt(ri3);
-
-            stmt = null;
-            rs = null;
-
-            reviewerInt = "INSERT INTO reviewer_interest (reviewer_ID,RI_Code) VALUES ("+rev_id+","+ri_3+")";
-
-            try {
-                stmt = conn.createStatement();
-                stmt.executeUpdate(reviewerInt);
-            }
-            catch (SQLException ex){
-                // handle any errors
-//                System.out.println("SQLException: " + ex.getMessage());
-//                System.out.println("SQLState: " + ex.getSQLState());
-//                System.out.println("VendorError: " + ex.getErrorCode());
-
-            }
-            finally {
-
-                if (rs != null) {
-                    try {
-                        rs.close();
-                    } catch (SQLException sqlEx) { } // ignore
-
-                    rs = null;
-                }
-
-                if (stmt != null) {
-                    try {
-                        stmt.close();
-                    } catch (SQLException sqlEx) { } // ignore
-
-                    stmt = null;
-                }
-            }
+        try{
+            coll.insert(user);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
 
-    public static void register_author(String fName, String lName, String emailAdd, String physAdd) {
+    public static void register_author(String fName, String lName, String emailAdd, String physAdd, String affiliation) {
 
-        String author = "";
-        Statement stmt = null;
-        ResultSet rs = null;
+        DBCollection coll = db.getCollection("author");
 
-        author = "INSERT INTO author (first_name,last_name,address,email) VALUES ('"+fName+"', '"+lName+"', '"+physAdd+"', '"+emailAdd+"')";
+        CommandResult doc1 = db.command(new BasicDBObject("$eval", "getNextSequence(\"author_id\")"));
 
-        try {
-            stmt = conn.createStatement();
-            stmt.executeUpdate(author);
-        }
-        catch (SQLException ex){
-            // handle any errors
-//            System.out.println("SQLException: " + ex.getMessage());
-//            System.out.println("SQLState: " + ex.getSQLState());
-//            System.out.println("VendorError: " + ex.getErrorCode());
+        Double author_id = (Double)doc1.get("retval");
 
-        }
-        finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException sqlEx) { } // ignore
+        int id = author_id.intValue();
 
-                rs = null;
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException sqlEx) { } // ignore
+        // System.out.println(id);
 
-                stmt = null;
-            }
+        DBObject user = new BasicDBObject("_id", id)
+                .append("first_name", fName)
+                .append("last_name", lName)
+                .append("address", physAdd)
+                .append("email", emailAdd)
+                .append("affiliation", affiliation);
+
+        try{
+            coll.insert(user);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
 
     public static void register_editor(String fName, String lName) {
 
-        String editor = "";
-        Statement stmt = null;
-        ResultSet rs = null;
+        DBCollection coll = db.getCollection("editor");
 
-        editor = "INSERT INTO editor (first_name,last_name) VALUES ('"+fName+"', '"+lName+"')";
+        CommandResult doc1 = db.command(new BasicDBObject("$eval", "getNextSequence(\"editor_id\")"));
 
-        try {
-            stmt = conn.createStatement();
-            stmt.executeUpdate(editor);
-        }
-        catch (SQLException ex){
-            // handle any errors
-//            System.out.println("SQLException: " + ex.getMessage());
-//            System.out.println("SQLState: " + ex.getSQLState());
-//            System.out.println("VendorError: " + ex.getErrorCode());
+        Double editor_id = (Double)doc1.get("retval");
 
-        }
-        finally {
+        int id = editor_id.intValue();
 
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException sqlEx) { } // ignore
+        // System.out.println(id);
 
-                rs = null;
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException sqlEx) { } // ignore
+        DBObject user = new BasicDBObject("_id", id)
+                .append("first_name", fName)
+                .append("last_name", lName);
 
-                stmt = null;
-            }
+
+        try{
+            coll.insert(user);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
@@ -2313,7 +2034,7 @@ public class Interface {
 
         String USER = "Team17";
 
-       // char [] PASS = {'O','m','x','B','4','n','D','x','t','A','Y','X','o','X','p','b'};
+        // char [] PASS = {'O','m','x','B','4','n','D','x','t','A','Y','X','o','X','p','b'};
 
         String PASS = "OmxB4nDxtAYXoXpb";
 
@@ -2322,7 +2043,7 @@ public class Interface {
                 "mycluster0-shard-00-01-ppp7l.mongodb.net:27017," +
                 "mycluster0-shard-00-02-ppp7l.mongodb.net:27017/";
 
-       // System.out.println(uriString);
+        // System.out.println(uriString);
 
         //"admin?ssl=true&replicaSet=Mycluster0-shard-0&authSource=admin";
 
@@ -2335,13 +2056,17 @@ public class Interface {
 //            db = mongoClient.getDatabase(USER);
 
 
-           // MongoClientURI uri = new MongoClientURI(
-                    //"mongodb://Team17:OmxB4nDxtAYXoXpb@cluster0-shard-00-00-ppp7l.mongodb.net:27017,cluster0-shard-00-01-ppp7l.mongodb.net:27017,cluster0-shard-00-02-ppp7l.mongodb.net:27017/admin?ssl=true&replicaSet=Mycluster0-shard-0&authSource=admin");
+            // MongoClientURI uri = new MongoClientURI(
+            //"mongodb://Team17:OmxB4nDxtAYXoXpb@cluster0-shard-00-00-ppp7l.mongodb.net:27017,cluster0-shard-00-01-ppp7l.mongodb.net:27017,cluster0-shard-00-02-ppp7l.mongodb.net:27017/admin?ssl=true&replicaSet=Mycluster0-shard-0&authSource=admin");
 
-          //  MongoClientURI uri = new MongoClientURI("mongodb://Team17:OmxB4nDxtAYXoXpb@cluster0-shard-00-00-ppp7l.mongodb.net:27017,cluster0-shard-00-01-ppp7l.mongodb.net:27017,cluster0-shard-00-02-ppp7l.mongodb.net:27017/Team17DB?replicaSet=Cluster0-shard-0");
+            //  MongoClientURI uri = new MongoClientURI("mongodb://Team17:OmxB4nDxtAYXoXpb@cluster0-shard-00-00-ppp7l.mongodb.net:27017,cluster0-shard-00-01-ppp7l.mongodb.net:27017,cluster0-shard-00-02-ppp7l.mongodb.net:27017/Team17DB?replicaSet=Cluster0-shard-0");
 
-            mongoClient = new MongoClient(new ServerAddress("local", 27017));
-//            db = mongoClient.getDatabase("Team17DB");
+            mongoClient = new MongoClient(new ServerAddress("localhost", 27017));
+            // db = mongoClient.getDatabase("cs61");
+            db = mongoClient.getDB("cs61");
+
+//
+            // db = mongoClient.getDatabase("Team17DB");
 
 //            MongoIterable<String> it = db.listCollectionNames();
 //
@@ -2355,11 +2080,10 @@ public class Interface {
 
             e.printStackTrace();
             return false;
-        } finally {
-            try {
-                mongoClient.close();
-            } catch (Exception e2) {
-            }
+        }
+
+        if (db == null){
+            return false;
         }
 
         return true;
