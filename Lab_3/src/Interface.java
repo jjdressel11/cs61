@@ -115,13 +115,13 @@ public class Interface {
                 System.out.print("Last Name: ");
                 String lName = sc.nextLine();
 
-                register_editor(fName, lName);
+                int editor_id = register_editor(fName, lName);
 
                 System.out.println(fName+" "+lName+" is registered.");
 
                 DBCollection editor_coll = db.getCollection("editor");
 
-                DBObject query  = new BasicDBObject("first_name", fName).append("last_name", lName);
+                DBObject query  = new BasicDBObject("_id", editor_id);
 
                 DBCursor cursor = editor_coll.find(query);
 
@@ -258,32 +258,13 @@ public class Interface {
                         coll.insert(query);
                         System.out.println("Assigned on: " + timestamp);
 
+                        // updating manuscript status
+                        coll = db.getCollection("manuscript");
+                        query = new BasicDBObject("_id", manuID);
 
-                        String manuReview = "";
-                        stmt = null;
+                        DBObject newObject = new BasicDBObject("status","reviewing").append("status_time_stamp",timestamp);
+                        coll.update(query,newObject);
 
-                        manuReview = "UPDATE manuscript SET status = 'reviewing', status_time_stamp = '"+timestamp+"' WHERE manuscript_ID = "+manuID+"";
-
-                        try {
-                            stmt = conn.createStatement();
-                            stmt.executeUpdate(manuReview);
-                        }
-                        catch (SQLException ex){
-                            // handle any errors
-//                            System.out.println("Sorry, the manuscript ID entered is not valid.");
-//                            System.out.println("SQLException: " + ex.getMessage());
-//                            System.out.println("SQLState: " + ex.getSQLState());
-//                            System.out.println("VendorError: " + ex.getErrorCode());
-                        }
-                        finally {
-                            if (stmt != null) {
-                                try {
-                                    stmt.close();
-                                } catch (SQLException sqlEx) { } // ignore
-
-                                stmt = null;
-                            }
-                        }
 
                         System.out.print("Enter another command, or type 'exit': ");
                     }
@@ -2003,7 +1984,7 @@ public class Interface {
 
     }
 
-    public static void register_editor(String fName, String lName) {
+    public static int register_editor(String fName, String lName) {
 
         DBCollection coll = db.getCollection("editor");
 
@@ -2026,6 +2007,8 @@ public class Interface {
             e.printStackTrace();
         }
 
+
+        return id;
     }
 
     public static boolean connect_to_DB(){

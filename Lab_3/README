@@ -1,3 +1,21 @@
+README for Lab 3
+Max Parker and Julia Dressel
+CS61
+
+Because we implemented the interface in Java, we will be running the database on the local machine.
+
+Setup:
+
+Start up the mongo backend on your local machine by running "mongod" in terminal.
+
+
+
+Type "use cs61" to switch to a database called "cs61".
+
+Run the file "MMsetup.js" on
+
+
+
 getting rid of the affiliation table, just saving someone's affiliation as an attribute
 
 getting rid of the manuscript_final table, just going to add attributes of manuscript_final when something is in typeset mode
