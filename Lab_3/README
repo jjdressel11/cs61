@@ -4,20 +4,31 @@ CS61
 
 Because we implemented the interface in Java, we will be running the database on the local machine.
 
-Setup:
+SETUP:
 
 Start up the mongo backend on your local machine by running "mongod" in terminal.
-
-
-
+Get onto the mongo shell by running "mongo" in terminal.
 Type "use cs61" to switch to a database called "cs61".
+Run the file "MMsetup.js" by copying its contents into the mongo shell.
+If you wish to fill the database, run "MMtest.js" by copying its contents into the mongo shell.
 
-Run the file "MMsetup.js" on
+FILES:
 
+Interface.java
 
+Java code that includes the front-end interface for the database. Some important things to know while using the front-end interface:
 
-getting rid of the affiliation table, just saving someone's affiliation as an attribute
+-commands into the front-end interface must be typed correctly. if a command is typed incorrectly, the interface will allow you to retype a command until you type one correctly.
+-editors must enter in IDs of manuscripts and reviewers that exist within the database. if an ID is entered that is not within the database, nothing in the database will update.
+-reviewers must only enter IDs of manuscripts to review assigned to them. if they review a manuscript not assigned to them, the database will not be updated.
+-if any user is prompted to enter an ID or another kind of integer, the user must enter an integer.
 
-getting rid of the manuscript_final table, just going to add attributes of manuscript_final when something is in typeset mode
+Other than those rules, the user interface should be very straightforward by following the prompts.
 
-getting rid of reviewer_interest - just going to save reviewer RI_Code in their reviewer collection
+TO COMPILE AND RUN:
+
+Please have the mongo-java-driver located in the same directory as the Interface.java file.
+
+javac -cp ".:./mongo-java-driver-3.4.2.jar" Interface.java
+
+java -cp ".:./mongo-java-driver-3.4.2.jar" Interface
